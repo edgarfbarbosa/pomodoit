@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import { TaskItem } from './TaskItem'
+import { TaskCardController } from './TaskCardController'
 import useTaskStore from '../stores/useTaskStore'
 
 export function TaskList() {
@@ -8,7 +8,7 @@ export function TaskList() {
   return (
     <View>
       {tasks.map((task) => (
-        <TaskItem
+        <TaskCardController
           key={task.id}
           id={task.id}
           name={task.name}
