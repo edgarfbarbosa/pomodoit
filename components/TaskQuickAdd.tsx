@@ -60,7 +60,7 @@ export function TaskQuickAdd() {
             </Text>
             <TextInput
               placeholder="NOME DA TAREFA"
-              className="text-2xl font-inter-bold border-b border-solid border-tertiary py-3 focus:outline-none"
+              className="task__input"
               value={taskName}
               onChangeText={setTaskName}
             />
@@ -75,29 +75,32 @@ export function TaskQuickAdd() {
               </Text>
               <Pressable
                 onPress={handleIncreasePomodoroAmount}
-                className="w-10 h-10 border border-tertiary items-center justify-center"
+                className="button__icon border border-tertiary"
               >
                 <ArrowUp />
               </Pressable>
               <Pressable
                 onPress={handleDecreasePomodoroAmount}
-                className="w-10 h-10 border border-tertiary items-center justify-center"
+                className="button__icon border border-tertiary"
               >
                 <ArrowDown />
               </Pressable>
             </View>
           </View>
           <View className="flex-row">
-            <Pressable>
-              <Text
-                onPress={handleAddTask}
-                className="bg-black text-white font-inter-bold uppercase px-8 py-4"
-              >
+            <Pressable
+              onPress={handleAddTask}
+              className="button__text bg-black px-8 py-4"
+            >
+              <Text className="text-white font-inter-bold uppercase">
                 Adicionar
               </Text>
             </Pressable>
-            <Pressable onPress={handleCancelAddTask}>
-              <Text className="bg-transparent text-black font-inter-bold uppercase underline px-8 py-4">
+            <Pressable
+              onPress={handleCancelAddTask}
+              className="button__text bg-transparent px-8 py-4"
+            >
+              <Text className="text-black font-inter-bold uppercase underline">
                 Cancelar
               </Text>
             </Pressable>

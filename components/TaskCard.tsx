@@ -9,7 +9,7 @@ export function TaskCard({
   onEditPress,
 }: TaskCardProps) {
   return (
-    <View className="flex-col mx-4 mb-4 p-5 rounded-xl bg-surface-2 border-l-4 border-l-primary">
+    <View className="task__container border-l-primary">
       <View className="flex-row items-center justify-between">
         <View className="flex-1 pr-8">
           <Text
@@ -27,10 +27,7 @@ export function TaskCard({
             <Text className="text-lg">0</Text> / {pomodoros}
           </Text>
 
-          <Pressable
-            onPress={onEditPress}
-            className="w-10 h-10 items-center justify-center rounded-lg bg-surface"
-          >
+          <Pressable onPress={onEditPress} className="button__icon bg-surface">
             <EllipsisVertical size={24} color="#333333" />
           </Pressable>
         </View>
