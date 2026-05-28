@@ -1,11 +1,11 @@
 import { TaskList } from '../components/TaskList'
-import { TaskQuickAdd } from '../components/TaskQuickAdd'
+import { TaskCreationCardController } from '../components/TaskCreationCardController'
 
 export function MainScreen() {
   return (
     <>
       <TaskList />
-      <TaskQuickAdd />
+      <TaskCreationCardController />
     </>
   )
 }
