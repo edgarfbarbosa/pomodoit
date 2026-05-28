@@ -6,8 +6,7 @@ interface TaskStore {
   toggleTaskCompleted: (id: string) => void
   createTask: (task: Task) => void
   deleteTask: (id: string) => void
-  updateTaskName: (id: string, name: string) => void
-  updateTaskPomodoros: (id: string, pomodoros: number) => void
+  updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) => void
 }
 
 const taskStore: StateCreator<TaskStore> = (set) => ({
@@ -23,17 +22,10 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
   createTask: (task: Task) =>
     set((state) => ({ tasks: [...state.tasks, task] })),
 
-  updateTaskName: (id: string, name: string) =>
+  updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, name } : task,
-      ),
-    })),
-
-  updateTaskPomodoros: (id: string, pomodoros: number) =>
-    set((state) => ({
-      tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, pomodoros } : task,
+        task.id === id ? { ...task, ...data } : task,
       ),
     })),
 

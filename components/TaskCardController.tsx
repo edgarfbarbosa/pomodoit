@@ -10,10 +10,7 @@ export function TaskCardController({ id, name, completed, pomodoros }: Task) {
   const [newPomodoroAmount, setNewPomodoroAmount] = useState(pomodoros)
 
   const deleteTask = useTaskStore((state) => state.deleteTask)
-  const updateTaskName = useTaskStore((state) => state.updateTaskName)
-  const updateTaskPomodoros = useTaskStore(
-    (state) => state.updateTaskPomodoros,
-  )
+  const updateTask = useTaskStore((state) => state.updateTask)
 
   function handleEditingButtonPress() {
     setIsEditing(true)
@@ -26,8 +23,10 @@ export function TaskCardController({ id, name, completed, pomodoros }: Task) {
   function handleSaveButtonPress() {
     if (!newTaskName.trim()) return
 
-    updateTaskName(id, newTaskName)
-    updateTaskPomodoros(id, newPomodoroAmount)
+    updateTask(id, {
+      name: newTaskName,
+      pomodoros: newPomodoroAmount,
+    })
 
     setIsEditing(false)
   }
