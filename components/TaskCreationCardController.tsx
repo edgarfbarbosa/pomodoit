@@ -28,7 +28,7 @@ export function TaskCreationCardController() {
     createTask({
       id: String(Date.now()),
       name: taskName,
-      completed: false,
+      current: false,
       pomodoros: pomodoroAmount,
     })
 

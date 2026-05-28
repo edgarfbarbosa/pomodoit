@@ -4,17 +4,22 @@ import { TaskCardProps } from '../types/task-card-props'
 
 export function TaskCard({
   name,
-  completed,
+  current,
   pomodoros,
+  onCardPress,
   onEditPress,
 }: TaskCardProps) {
   return (
-    <View className="task__container border-l-primary">
+    <Pressable
+      onPress={onCardPress}
+      className={`task__container ${
+        current ? 'border-l-primary' : 'border-l-transparent'
+      }`}
+    >
       <View className="flex-row items-center justify-between">
         <View className="flex-1 pr-8">
           <Text
-            className={`text-xl font-inter-bold -tracking-wide
-            ${completed ? 'line-through text-tertiary' : 'text-black'}`}
+            className="text-xl font-inter-bold -tracking-wide text-black"
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -32,6 +37,6 @@ export function TaskCard({
           </Pressable>
         </View>
       </View>
-    </View>
+    </Pressable>
   )
 }

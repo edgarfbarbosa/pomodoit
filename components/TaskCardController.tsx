@@ -4,13 +4,18 @@ import { Task } from '../types/task'
 import { TaskCard } from './TaskCard'
 import { TaskCardExpanded } from './TaskCardExpanded'
 
-export function TaskCardController({ id, name, completed, pomodoros }: Task) {
+export function TaskCardController({ id, name, current, pomodoros }: Task) {
   const [isEditing, setIsEditing] = useState(false)
   const [newTaskName, setNewTaskName] = useState(name)
   const [newPomodoroAmount, setNewPomodoroAmount] = useState(pomodoros)
 
   const deleteTask = useTaskStore((state) => state.deleteTask)
   const updateTask = useTaskStore((state) => state.updateTask)
+  const setCurrentTask = useTaskStore((state) => state.setCurrentTask)
+
+  function handleCardPress() {
+    setCurrentTask(id)
+  }
 
   function handleEditingButtonPress() {
     setIsEditing(true)
@@ -63,8 +68,9 @@ export function TaskCardController({ id, name, completed, pomodoros }: Task) {
   return (
     <TaskCard
       name={name}
-      completed={completed}
+      current={current}
       pomodoros={pomodoros}
+      onCardPress={handleCardPress}
       onEditPress={handleEditingButtonPress}
     />
   )

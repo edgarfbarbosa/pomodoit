@@ -2,8 +2,9 @@ import { Task } from './task'
 
 export type TaskCardProps = Pick<
   Task,
-  'name' | 'completed' | 'pomodoros'
+  'name' | 'current' | 'pomodoros'
 > & {
+  onCardPress: () => void
   onEditPress: () => void
 }
 

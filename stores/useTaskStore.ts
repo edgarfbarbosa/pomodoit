@@ -3,10 +3,10 @@ import { Task } from '../types/task'
 
 interface TaskStore {
   tasks: Task[]
-  toggleTaskCompleted: (id: string) => void
   createTask: (task: Task) => void
   deleteTask: (id: string) => void
   updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) => void
+  setCurrentTask: (id: string) => void
 }
 
 const taskStore: StateCreator<TaskStore> = (set) => ({
@@ -14,7 +14,7 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
     {
       id: '3',
       name: 'Desenvolver meu projeto',
-      completed: false,
+      current: true,
       pomodoros: 3,
     },
   ],
@@ -34,11 +34,12 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
       tasks: state.tasks.filter((task) => task.id !== id),
     })),
 
-  toggleTaskCompleted: (id: string) =>
+  setCurrentTask: (id: string) =>
     set((state) => ({
-      tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
+      tasks: state.tasks.map((task) => ({
+        ...task,
+        current: task.id === id,
+      })),
     })),
 })
 
