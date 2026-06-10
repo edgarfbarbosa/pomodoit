@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Play, Clock5 } from 'lucide-react-native'
+import { Play, Pause, Clock5, SkipForward } from 'lucide-react-native'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
 
@@ -8,7 +8,18 @@ export function PomodoroDisplay() {
     (state) => state.tasks.find((task) => task.current)?.name,
   )
 
-  const { formattedTime, startPomodoro } = usePomodoro()
+  const {
+    formattedTime,
+    isRunning,
+    startTimer,
+    pauseTimer,
+    pomodoroState,
+    switchPomodoroState,
+  } = usePomodoro()
+
+  function handleStartOrPauseButtonPress() {
+    isRunning ? pauseTimer() : startTimer()
+  }
 
   return (
     <View className="flex flex-col px-6 py-8">
@@ -28,15 +39,32 @@ export function PomodoroDisplay() {
         </Text>
       </View>
 
-      <View>
+      <View className="flex-row gap-3">
         <Pressable
-          onPress={startPomodoro}
-          className="flex-row gap-2 items-center justify-center w-full h-16 bg-secondary rounded-xl"
+          onPress={handleStartOrPauseButtonPress}
+          className="flex-row gap-2 flex-1 items-center justify-center h-16 bg-secondary rounded-xl"
         >
-          <Play size={20} color="#FFFFFF" />
+          {isRunning ? (
+            <Pause size={20} color="#FFFFFF" />
+          ) : (
+            <Play size={20} color="#FFFFFF" />
+          )}
           <Text className="font-inter-black text-lg text-white tracking-widest uppercase">
-            Iniciar foco
+            {pomodoroState === 'pomodoro'
+              ? isRunning
+                ? 'Pausar foco'
+                : 'Iniciar foco'
+              : isRunning
+                ? 'Pausar pausa'
+                : 'Iniciar pausa'}
           </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={switchPomodoroState}
+          className="flex items-center justify-center h-16 w-16 bg-secondary rounded-xl"
+        >
+          <SkipForward size={20} color="#FFFFFF" />
         </Pressable>
       </View>
     </View>

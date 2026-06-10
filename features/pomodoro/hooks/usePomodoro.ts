@@ -1,12 +1,21 @@
 import { useState, useMemo, useEffect } from 'react'
 
 const DEFAULT_POMODORO_MINUTES = 25
+const DEFAULT_SHORT_BREAK_MINUTES = 5
 
-export function usePomodoro(pomodoro: number = DEFAULT_POMODORO_MINUTES) {
+export function usePomodoro(
+  pomodoro: number = DEFAULT_POMODORO_MINUTES,
+  shortBreak: number = DEFAULT_SHORT_BREAK_MINUTES,
+) {
   const pomodoroInSeconds = pomodoro * 60
+  const shortBreakInSeconds = shortBreak * 60
 
   const [countdown, setCountdown] = useState(pomodoroInSeconds)
   const [isRunning, setIsRunning] = useState(false)
+
+  const [pomodoroState, setPomodoroState] = useState<
+    'pomodoro' | 'shortBreak'
+  >('pomodoro')
 
   const minutes = Math.floor(countdown / 60)
   const seconds = countdown % 60
@@ -15,12 +24,30 @@ export function usePomodoro(pomodoro: number = DEFAULT_POMODORO_MINUTES) {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
   }, [minutes, seconds])
 
-  function startPomodoro() {
+  function startTimer() {
+    if (countdown === 0) return
+
     setIsRunning(true)
   }
 
-  function pausePomodoro() {
+  function pauseTimer() {
     setIsRunning(false)
+  }
+
+  function switchPomodoroState() {
+    setIsRunning(false)
+
+    if (pomodoroState === 'pomodoro') {
+      setPomodoroState('shortBreak')
+      setCountdown(shortBreakInSeconds)
+      return
+    }
+
+    if (pomodoroState === 'shortBreak') {
+      setPomodoroState('pomodoro')
+      setCountdown(pomodoroInSeconds)
+      return
+    }
   }
 
   useEffect(() => {
@@ -47,7 +74,9 @@ export function usePomodoro(pomodoro: number = DEFAULT_POMODORO_MINUTES) {
     seconds,
     formattedTime,
     isRunning,
-    startPomodoro,
-    pausePomodoro,
+    pomodoroState,
+    startTimer,
+    pauseTimer,
+    switchPomodoroState,
   }
 }
