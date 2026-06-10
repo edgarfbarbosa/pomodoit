@@ -5,7 +5,8 @@ import { TaskCardProps } from '../types/task-card-props'
 export function TaskCard({
   name,
   current,
-  pomodoros,
+  estimatedPomodoros,
+  completedPomodoros,
   onCardPress,
   onEditPress,
 }: TaskCardProps) {
@@ -29,7 +30,8 @@ export function TaskCard({
 
         <View className="flex-row items-center gap-3">
           <Text className="text-sm text-tertiary font-inter-bold uppercase -tracking-wide">
-            <Text className="text-lg">0</Text> / {pomodoros}
+            <Text className="text-lg">{completedPomodoros}</Text> /{' '}
+            {estimatedPomodoros}
           </Text>
 
           <Pressable onPress={onEditPress} className="button__icon bg-surface">

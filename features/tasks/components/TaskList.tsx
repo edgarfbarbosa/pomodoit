@@ -13,7 +13,8 @@ export function TaskList() {
           id={task.id}
           name={task.name}
           current={task.current}
-          pomodoros={task.pomodoros}
+          estimatedPomodoros={task.estimatedPomodoros}
+          completedPomodoros={task.completedPomodoros}
         />
       ))}
     </View>

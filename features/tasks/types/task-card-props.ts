@@ -2,7 +2,7 @@ import { Task } from './task'
 
 export type TaskCardProps = Pick<
   Task,
-  'name' | 'current' | 'pomodoros'
+  'name' | 'current' | 'estimatedPomodoros' | 'completedPomodoros'
 > & {
   onCardPress: () => void
   onEditPress: () => void
@@ -10,10 +10,11 @@ export type TaskCardProps = Pick<
 
 export type TaskCardExpandedProps = {
   newTaskName: string
-  newPomodoroAmount: number
+  newEstimatedPomodoros: number
+  completedPomodoros: number
   onNewTaskNameChange: (name: string) => void
-  onIncreaseNewPomodoroAmount: () => void
-  onDecreaseNewPomodoroAmount: () => void
+  onIncreaseNewEstimatedPomodoros: () => void
+  onDecreaseNewEstimatedPomodoros: () => void
   onSavePress: () => void
   onCancelPress: () => void
   onDeletePress: () => void

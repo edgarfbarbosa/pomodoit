@@ -4,10 +4,17 @@ import { Task } from '../types/task'
 import { TaskCard } from './TaskCard'
 import { TaskCardExpanded } from './TaskCardExpanded'
 
-export function TaskCardController({ id, name, current, pomodoros }: Task) {
+export function TaskCardController({
+  id,
+  name,
+  current,
+  estimatedPomodoros,
+  completedPomodoros,
+}: Task) {
   const [isEditing, setIsEditing] = useState(false)
   const [newTaskName, setNewTaskName] = useState(name)
-  const [newPomodoroAmount, setNewPomodoroAmount] = useState(pomodoros)
+  const [newEstimatedPomodoros, setNewEstimatedPomodoros] =
+    useState(estimatedPomodoros)
 
   const deleteTask = useTaskStore((state) => state.deleteTask)
   const updateTask = useTaskStore((state) => state.updateTask)
@@ -30,7 +37,7 @@ export function TaskCardController({ id, name, current, pomodoros }: Task) {
 
     updateTask(id, {
       name: newTaskName,
-      pomodoros: newPomodoroAmount,
+      estimatedPomodoros: newEstimatedPomodoros,
     })
 
     setIsEditing(false)
@@ -38,26 +45,31 @@ export function TaskCardController({ id, name, current, pomodoros }: Task) {
 
   function handleCancelButtonPress() {
     setNewTaskName(name)
-    setNewPomodoroAmount(pomodoros)
+    setNewEstimatedPomodoros(estimatedPomodoros)
     setIsEditing(false)
   }
 
-  function handleIncreaseNewPomodoroAmount() {
-    setNewPomodoroAmount((prev) => prev + 1)
+  function handleIncreaseNewEstimatedPomodoros() {
+    setNewEstimatedPomodoros((prev) => prev + 1)
   }
 
-  function handleDecreaseNewPomodoroAmount() {
-    setNewPomodoroAmount((prev) => Math.max(1, prev - 1))
+  function handleDecreaseNewEstimatedPomodoros() {
+    setNewEstimatedPomodoros((prev) => Math.max(1, prev - 1))
   }
 
   if (isEditing) {
     return (
       <TaskCardExpanded
         newTaskName={newTaskName}
-        newPomodoroAmount={newPomodoroAmount}
+        newEstimatedPomodoros={newEstimatedPomodoros}
+        completedPomodoros={completedPomodoros}
         onNewTaskNameChange={setNewTaskName}
-        onIncreaseNewPomodoroAmount={handleIncreaseNewPomodoroAmount}
-        onDecreaseNewPomodoroAmount={handleDecreaseNewPomodoroAmount}
+        onIncreaseNewEstimatedPomodoros={
+          handleIncreaseNewEstimatedPomodoros
+        }
+        onDecreaseNewEstimatedPomodoros={
+          handleDecreaseNewEstimatedPomodoros
+        }
         onSavePress={handleSaveButtonPress}
         onCancelPress={handleCancelButtonPress}
         onDeletePress={handleDeleteButtonPress}
@@ -69,7 +81,8 @@ export function TaskCardController({ id, name, current, pomodoros }: Task) {
     <TaskCard
       name={name}
       current={current}
-      pomodoros={pomodoros}
+      estimatedPomodoros={estimatedPomodoros}
+      completedPomodoros={completedPomodoros}
       onCardPress={handleCardPress}
       onEditPress={handleEditingButtonPress}
     />

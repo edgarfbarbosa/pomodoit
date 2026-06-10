@@ -4,8 +4,8 @@ import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
 
 export function PomodoroDisplay() {
-  const currentTaskName = useTaskStore(
-    (state) => state.tasks.find((task) => task.current)?.name,
+  const currentTask = useTaskStore((state) =>
+    state.tasks.find((task) => task.current),
   )
 
   const {
@@ -25,11 +25,15 @@ export function PomodoroDisplay() {
     <View className="flex flex-col px-6 py-8">
       <View className="flex-row justify-between">
         <Text className="font-inter-black text-lg text-primary uppercase">
-          {currentTaskName ?? 'Nenhuma tarefa selecionada'}
+          {currentTask?.name ?? 'Nenhuma tarefa selecionada'}
         </Text>
         <View className="flex-row items-center justify-center gap-1 p-2 bg-blue-400 rounded-md">
           <Clock5 size={16} color="#0033FF" />
-          <Text className="text-sm font-inter-bold text-primary">0/3</Text>
+          <Text className="text-sm font-inter-bold text-primary">
+            {currentTask
+              ? `${currentTask.completedPomodoros}/${currentTask.estimatedPomodoros}`
+              : '0/0'}
+          </Text>
         </View>
       </View>
 

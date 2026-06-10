@@ -4,10 +4,11 @@ import { TaskCardExpandedProps } from '../types/task-card-props'
 
 export function TaskCardExpanded({
   newTaskName,
-  newPomodoroAmount,
+  newEstimatedPomodoros,
+  completedPomodoros,
   onNewTaskNameChange,
-  onIncreaseNewPomodoroAmount,
-  onDecreaseNewPomodoroAmount,
+  onIncreaseNewEstimatedPomodoros,
+  onDecreaseNewEstimatedPomodoros,
   onSavePress,
   onCancelPress,
   onDeletePress,
@@ -30,19 +31,19 @@ export function TaskCardExpanded({
 
           <View className="flex-row gap-4 items-center">
             <Text className="font-inter-bold text-tertiary text-2xl tracking-wider">
-              0 / {newPomodoroAmount}
+              {completedPomodoros} / {newEstimatedPomodoros}
             </Text>
 
             <View className="flex-col gap-2">
               <Pressable
-                onPress={onIncreaseNewPomodoroAmount}
+                onPress={onIncreaseNewEstimatedPomodoros}
                 className="button__icon border border-tertiary"
               >
                 <ArrowUp />
               </Pressable>
 
               <Pressable
-                onPress={onDecreaseNewPomodoroAmount}
+                onPress={onDecreaseNewEstimatedPomodoros}
                 className="button__icon border border-tertiary"
               >
                 <ArrowDown />

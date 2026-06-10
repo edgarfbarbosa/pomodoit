@@ -15,7 +15,8 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
       id: '3',
       name: 'Desenvolver meu projeto',
       current: true,
-      pomodoros: 3,
+      estimatedPomodoros: 3,
+      completedPomodoros: 0,
     },
   ],
 

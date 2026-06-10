@@ -1,6 +1,7 @@
 export type Task = {
   id: string
   name: string
-  pomodoros: number
+  estimatedPomodoros: number
+  completedPomodoros: number
   current: boolean
 }
