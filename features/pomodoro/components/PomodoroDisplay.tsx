@@ -1,6 +1,6 @@
 import { View, Text, Pressable } from 'react-native'
 import { Play, Clock5 } from 'lucide-react-native'
-import useTaskStore from '../../../stores/useTaskStore'
+import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
 
 export function PomodoroDisplay() {
