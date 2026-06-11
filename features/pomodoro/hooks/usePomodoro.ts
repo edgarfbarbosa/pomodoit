@@ -19,6 +19,7 @@ export function usePomodoro(
 
   const [countdown, setCountdown] = useState(pomodoroInSeconds)
   const [isRunning, setIsRunning] = useState(false)
+  const [isPomodoroCompleted, setIsPomodoroCompleted] = useState(false)
 
   const [pomodoroState, setPomodoroState] = useState<
     'pomodoro' | 'shortBreak' | 'longBreak'
@@ -43,10 +44,11 @@ export function usePomodoro(
 
   function switchPomodoroState() {
     setIsRunning(false)
+    setIsPomodoroCompleted(false)
 
     if (pomodoroState === 'pomodoro') {
       if (
-        completedPomodoros > 0 &&
+        isPomodoroCompleted &&
         completedPomodoros % roundsBeforeLongBreak === 0
       ) {
         setPomodoroState('longBreak')
@@ -56,7 +58,6 @@ export function usePomodoro(
 
       setPomodoroState('shortBreak')
       setCountdown(shortBreakInSeconds)
-
       return
     }
 
@@ -77,6 +78,7 @@ export function usePomodoro(
           setIsRunning(false)
 
           if (pomodoroState === 'pomodoro') {
+            setIsPomodoroCompleted(true)
             onPomodoroComplete?.()
           }
 
@@ -90,6 +92,27 @@ export function usePomodoro(
     return () => clearInterval(intervalId)
   }, [isRunning, onPomodoroComplete, pomodoroState])
 
+  useEffect(() => {
+    if (
+      countdown === 0 &&
+      pomodoroState === 'pomodoro' &&
+      isPomodoroCompleted
+    ) {
+      switchPomodoroState()
+      return
+    }
+
+    if (countdown === 0 && pomodoroState === 'shortBreak') {
+      switchPomodoroState()
+      return
+    }
+
+    if (countdown === 0 && pomodoroState === 'longBreak') {
+      switchPomodoroState()
+      return
+    }
+  }, [countdown, isPomodoroCompleted, pomodoroState])
+
   return {
     countdown,
     minutes,
@@ -100,5 +123,6 @@ export function usePomodoro(
     startTimer,
     pauseTimer,
     switchPomodoroState,
+    isPomodoroCompleted,
   }
 }
