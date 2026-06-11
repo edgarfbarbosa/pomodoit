@@ -26,7 +26,13 @@ export function PomodoroDisplay() {
     pauseTimer,
     pomodoroState,
     switchPomodoroState,
-  } = usePomodoro(undefined, undefined, handlePomodoroComplete)
+  } = usePomodoro(
+    undefined,
+    undefined,
+    undefined,
+    handlePomodoroComplete,
+    currentTask?.completedPomodoros,
+  )
 
   function handleStartOrPauseButtonPress() {
     isRunning ? pauseTimer() : startTimer()
@@ -69,9 +75,13 @@ export function PomodoroDisplay() {
               ? isRunning
                 ? 'Pausar foco'
                 : 'Iniciar foco'
-              : isRunning
-                ? 'Pausar pausa'
-                : 'Iniciar pausa'}
+              : pomodoroState === 'shortBreak'
+                ? isRunning
+                  ? 'Pausar pausa curta'
+                  : 'Iniciar pausa curta'
+                : isRunning
+                  ? 'Pausar pausa longa'
+                  : 'Iniciar pausa longa'}
           </Text>
         </Pressable>
 
