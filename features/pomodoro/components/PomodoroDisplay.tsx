@@ -1,10 +1,13 @@
 import { View, Text, Pressable } from 'react-native'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Play, Pause, Clock5, SkipForward } from 'lucide-react-native'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
+import { Modal } from '../../../components/Modal'
 
 export function PomodoroDisplay() {
+  const [isOpen, setIsOpen] = useState(false)
+
   const currentTask = useTaskStore((state) =>
     state.tasks.find((task) => task.current),
   )
@@ -26,6 +29,7 @@ export function PomodoroDisplay() {
     pauseTimer,
     pomodoroState,
     switchPomodoroState,
+    isPomodoroCompleted,
   } = usePomodoro(
     undefined,
     undefined,
@@ -38,8 +42,36 @@ export function PomodoroDisplay() {
     isRunning ? pauseTimer() : startTimer()
   }
 
+  function handleSkipButtonPress() {
+    if (pomodoroState === 'pomodoro' && isRunning && !isPomodoroCompleted) {
+      setIsOpen(true)
+      return
+    }
+
+    switchPomodoroState()
+  }
+
+  function handleCancelSkipPress() {
+    setIsOpen(false)
+  }
+
+  function handleConfirmSkipPress() {
+    setIsOpen(false)
+    switchPomodoroState()
+  }
+
   return (
     <View className="flex flex-col px-6 py-8">
+      <Modal
+        visible={isOpen}
+        title="Descartar foco atual?"
+        description="Todo o progresso desta sessão de foco será perdido e não será contabilizado."
+        confirmLabel="Descartar foco"
+        cancelLabel="Continuar foco"
+        onConfirm={handleConfirmSkipPress}
+        onCancel={handleCancelSkipPress}
+      />
+
       <View className="flex-row justify-between">
         <Text className="font-inter-black text-lg text-primary uppercase">
           {currentTask?.name ?? 'Nenhuma tarefa selecionada'}
@@ -86,7 +118,7 @@ export function PomodoroDisplay() {
         </Pressable>
 
         <Pressable
-          onPress={switchPomodoroState}
+          onPress={handleSkipButtonPress}
           className="flex items-center justify-center h-16 w-16 bg-secondary rounded-xl"
         >
           <SkipForward size={20} color="#FFFFFF" />
