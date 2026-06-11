@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useCallback } from 'react'
 import { Play, Pause, Clock5, SkipForward } from 'lucide-react-native'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
@@ -8,6 +9,16 @@ export function PomodoroDisplay() {
     state.tasks.find((task) => task.current),
   )
 
+  const setCompletedPomodoros = useTaskStore(
+    (state) => state.setCompletedPomodoros,
+  )
+
+  const handlePomodoroComplete = useCallback(() => {
+    if (!currentTask) return
+
+    setCompletedPomodoros(currentTask.id, currentTask.completedPomodoros + 1)
+  }, [currentTask, setCompletedPomodoros])
+
   const {
     formattedTime,
     isRunning,
@@ -15,7 +26,7 @@ export function PomodoroDisplay() {
     pauseTimer,
     pomodoroState,
     switchPomodoroState,
-  } = usePomodoro()
+  } = usePomodoro(undefined, undefined, handlePomodoroComplete)
 
   function handleStartOrPauseButtonPress() {
     isRunning ? pauseTimer() : startTimer()

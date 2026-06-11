@@ -6,6 +6,7 @@ const DEFAULT_SHORT_BREAK_MINUTES = 5
 export function usePomodoro(
   pomodoro: number = DEFAULT_POMODORO_MINUTES,
   shortBreak: number = DEFAULT_SHORT_BREAK_MINUTES,
+  onPomodoroComplete?: () => void,
 ) {
   const pomodoroInSeconds = pomodoro * 60
   const shortBreakInSeconds = shortBreak * 60
@@ -58,6 +59,11 @@ export function usePomodoro(
         if (currentCountdown <= 1) {
           clearInterval(intervalId)
           setIsRunning(false)
+
+          if (pomodoroState === 'pomodoro') {
+            onPomodoroComplete?.()
+          }
+
           return 0
         }
 
@@ -66,7 +72,7 @@ export function usePomodoro(
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [isRunning])
+  }, [isRunning, onPomodoroComplete, pomodoroState])
 
   return {
     countdown,

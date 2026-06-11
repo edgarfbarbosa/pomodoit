@@ -7,6 +7,7 @@ interface TaskStore {
   deleteTask: (id: string) => void
   updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) => void
   setCurrentTask: (id: string) => void
+  setCompletedPomodoros: (id: string, completedPomodoros: number) => void
 }
 
 const taskStore: StateCreator<TaskStore> = (set) => ({
@@ -41,6 +42,13 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
         ...task,
         current: task.id === id,
       })),
+    })),
+
+  setCompletedPomodoros: (id: string, completedPomodoros: number) =>
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === id ? { ...task, completedPomodoros } : task,
+      ),
     })),
 })
 
