@@ -1,10 +1,8 @@
-import { Pressable, View, Text } from 'react-native'
 import { Plus } from 'lucide-react-native'
-import { TaskCreationCardProps } from '../types/task-creation-card-props'
+import { Pressable, Text, View } from 'react-native'
+import type { TaskCreationCardProps } from '../types/task-creation-card-props'
 
-export function TaskCreationCard({
-  onOpenFormPress,
-}: TaskCreationCardProps) {
+export function TaskCreationCard({ onOpenFormPress }: TaskCreationCardProps) {
   return (
     <View className="px-4 mb-4">
       <Pressable

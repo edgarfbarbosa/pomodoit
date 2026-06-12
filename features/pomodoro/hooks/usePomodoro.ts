@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const DEFAULT_POMODORO_MINUTES = 25
 const DEFAULT_SHORT_BREAK_MINUTES = 5
@@ -42,7 +42,7 @@ export function usePomodoro(
     setIsRunning(false)
   }
 
-  function switchPomodoroState() {
+  const switchPomodoroState = useCallback(() => {
     setIsRunning(false)
     setIsPomodoroCompleted(false)
 
@@ -66,7 +66,15 @@ export function usePomodoro(
       setCountdown(pomodoroInSeconds)
       return
     }
-  }
+  }, [
+    pomodoroState,
+    isPomodoroCompleted,
+    completedPomodoros,
+    roundsBeforeLongBreak,
+    longBreakInSeconds,
+    shortBreakInSeconds,
+    pomodoroInSeconds,
+  ])
 
   useEffect(() => {
     if (!isRunning) return
@@ -111,7 +119,7 @@ export function usePomodoro(
       switchPomodoroState()
       return
     }
-  }, [countdown, isPomodoroCompleted, pomodoroState])
+  }, [countdown, isPomodoroCompleted, pomodoroState, switchPomodoroState])
 
   return {
     countdown,

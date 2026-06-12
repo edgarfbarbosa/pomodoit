@@ -1,6 +1,6 @@
-import { View, Text, Pressable } from 'react-native'
 import { EllipsisVertical } from 'lucide-react-native'
-import { TaskCardProps } from '../types/task-card-props'
+import { Pressable, Text, View } from 'react-native'
+import type { TaskCardProps } from '../types/task-card-props'
 
 export function TaskCard({
   name,

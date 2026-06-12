@@ -1,6 +1,6 @@
-import { View, Text, Pressable, TextInput } from 'react-native'
-import { Trash2, ArrowUp, ArrowDown } from 'lucide-react-native'
-import { TaskCardExpandedProps } from '../types/task-card-props'
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react-native'
+import { Pressable, Text, TextInput, View } from 'react-native'
+import type { TaskCardExpandedProps } from '../types/task-card-props'
 
 export function TaskCardExpanded({
   newTaskName,

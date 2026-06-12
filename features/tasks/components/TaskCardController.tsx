@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import useTaskStore from '../stores/useTaskStore'
-import { Task } from '../types/task'
+import type { Task } from '../types/task'
 import { TaskCard } from './TaskCard'
 import { TaskCardExpanded } from './TaskCardExpanded'
 
@@ -64,12 +64,8 @@ export function TaskCardController({
         newEstimatedPomodoros={newEstimatedPomodoros}
         completedPomodoros={completedPomodoros}
         onNewTaskNameChange={setNewTaskName}
-        onIncreaseNewEstimatedPomodoros={
-          handleIncreaseNewEstimatedPomodoros
-        }
-        onDecreaseNewEstimatedPomodoros={
-          handleDecreaseNewEstimatedPomodoros
-        }
+        onIncreaseNewEstimatedPomodoros={handleIncreaseNewEstimatedPomodoros}
+        onDecreaseNewEstimatedPomodoros={handleDecreaseNewEstimatedPomodoros}
         onSavePress={handleSaveButtonPress}
         onCancelPress={handleCancelButtonPress}
         onDeletePress={handleDeleteButtonPress}

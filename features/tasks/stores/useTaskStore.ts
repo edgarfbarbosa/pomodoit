@@ -1,5 +1,5 @@
-import { create, StateCreator } from 'zustand'
-import { Task } from '../types/task'
+import { create, type StateCreator } from 'zustand'
+import type { Task } from '../types/task'
 
 interface TaskStore {
   tasks: Task[]

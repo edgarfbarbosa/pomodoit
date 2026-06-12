@@ -1,4 +1,4 @@
-import { Task } from './task'
+import type { Task } from './task'
 
 export type TaskCardProps = Pick<
   Task,

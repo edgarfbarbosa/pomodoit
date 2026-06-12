@@ -1,9 +1,9 @@
-import { View, Text, Pressable } from 'react-native'
+import { Clock5, Pause, Play, SkipForward } from 'lucide-react-native'
 import { useCallback, useState } from 'react'
-import { Play, Pause, Clock5, SkipForward } from 'lucide-react-native'
+import { Pressable, Text, View } from 'react-native'
+import { Modal } from '../../../components/Modal'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
-import { Modal } from '../../../components/Modal'
 
 export function PomodoroDisplay() {
   const [isOpen, setIsOpen] = useState(false)

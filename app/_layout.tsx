@@ -1,6 +1,3 @@
-import { Stack } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import { useFonts } from 'expo-font'
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -9,6 +6,9 @@ import {
   Inter_800ExtraBold,
   Inter_900Black,
 } from '@expo-google-fonts/inter'
+import { useFonts } from 'expo-font'
+import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({

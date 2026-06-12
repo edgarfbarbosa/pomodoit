@@ -1,4 +1,4 @@
-import { Modal as NativeModal, View, Text, Pressable } from 'react-native'
+import { Modal as NativeModal, Pressable, Text, View } from 'react-native'
 
 type ModalProps = {
   visible: boolean
@@ -32,9 +32,7 @@ export function Modal({
             {title}
           </Text>
 
-          <Text className="mb-8 font-inter text-tertiary">
-            {description}
-          </Text>
+          <Text className="mb-8 font-inter text-tertiary">{description}</Text>
 
           <Pressable
             onPress={onConfirm}

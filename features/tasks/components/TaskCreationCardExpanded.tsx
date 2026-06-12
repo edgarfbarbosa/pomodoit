@@ -1,6 +1,6 @@
-import { Pressable, View, Text, TextInput } from 'react-native'
-import { ArrowUp, ArrowDown } from 'lucide-react-native'
-import { TaskCreationCardExpandedProps } from '../types/task-creation-card-props'
+import { ArrowDown, ArrowUp } from 'lucide-react-native'
+import { Pressable, Text, TextInput, View } from 'react-native'
+import type { TaskCreationCardExpandedProps } from '../types/task-creation-card-props'
 
 export function TaskCreationCardExpanded({
   taskName,
