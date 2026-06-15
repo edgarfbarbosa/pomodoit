@@ -1,4 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create, type StateCreator } from 'zustand'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import type { Task } from '../types/task'
 
 interface TaskStore {
@@ -17,8 +19,8 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
       name: 'Desenvolver meu projeto',
       current: true,
       estimatedPomodoros: 3,
-      completedPomodoros: 0,
-    },
+      completedPomodoros: 0
+    }
   ],
 
   createTask: (task: Task) =>
@@ -27,31 +29,39 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
   updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, ...data } : task,
-      ),
+        task.id === id ? { ...task, ...data } : task
+      )
     })),
 
   deleteTask: (id: string) =>
     set((state) => ({
-      tasks: state.tasks.filter((task) => task.id !== id),
+      tasks: state.tasks.filter((task) => task.id !== id)
     })),
 
   setCurrentTask: (id: string) =>
     set((state) => ({
       tasks: state.tasks.map((task) => ({
         ...task,
-        current: task.id === id,
-      })),
+        current: task.id === id
+      }))
     })),
 
   setCompletedPomodoros: (id: string, completedPomodoros: number) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, completedPomodoros } : task,
-      ),
-    })),
+        task.id === id ? { ...task, completedPomodoros } : task
+      )
+    }))
 })
 
-const useTaskStore = create<TaskStore>(taskStore)
+const useTaskStore = create<TaskStore>()(
+  persist(taskStore, {
+    name: 'pomodoit-task-store',
+    storage: createJSONStorage(() => AsyncStorage),
+    partialize: (state) => ({
+      tasks: state.tasks
+    })
+  })
+)
 
 export default useTaskStore
