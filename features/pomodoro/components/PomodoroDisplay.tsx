@@ -5,6 +5,7 @@ import { Button } from '../../../components/Button'
 import { Modal } from '../../../components/Modal'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
+import usePomodoroTimerSettings from '../stores/usePomodoroTimerSettings'
 
 export function PomodoroDisplay() {
   const [isOpen, setIsOpen] = useState(false)
@@ -15,6 +16,22 @@ export function PomodoroDisplay() {
 
   const setCompletedPomodoros = useTaskStore(
     (state) => state.setCompletedPomodoros,
+  )
+
+  const pomodoroMinutes = usePomodoroTimerSettings(
+    (state) => state.pomodoroMinutes,
+  )
+
+  const shortBreakMinutes = usePomodoroTimerSettings(
+    (state) => state.shortBreakMinutes,
+  )
+
+  const longBreakMinutes = usePomodoroTimerSettings(
+    (state) => state.longBreakMinutes,
+  )
+
+  const roundsBeforeLongBreak = usePomodoroTimerSettings(
+    (state) => state.roundsBeforeLongBreak,
   )
 
   const handlePomodoroComplete = useCallback(() => {
@@ -32,11 +49,12 @@ export function PomodoroDisplay() {
     switchPomodoroState,
     isPomodoroCompleted,
   } = usePomodoro(
-    undefined,
-    undefined,
-    undefined,
+    pomodoroMinutes,
+    shortBreakMinutes,
+    longBreakMinutes,
     handlePomodoroComplete,
     currentTask?.completedPomodoros,
+    roundsBeforeLongBreak,
   )
 
   function handleStartOrPauseButtonPress() {
