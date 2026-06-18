@@ -1,12 +1,15 @@
 import { Clock5, Pause, Play, SkipForward } from 'lucide-react-native'
 import { useCallback, useState } from 'react'
-import { Text, View } from 'react-native'
-import { Button } from '../../../components/Button'
+import { Pressable, Text, View } from 'react-native'
 import { Modal } from '../../../components/Modal'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
 import usePomodoroTimerSettings from '../stores/usePomodoroTimerSettings'
 
+/**
+ * Exibe a tarefa atual, o tempo restante, o estágio do ciclo e as ações
+ * rápidas para iniciar, pausar ou avançar a sessão.
+ */
 export function PomodoroDisplay() {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -34,6 +37,14 @@ export function PomodoroDisplay() {
     (state) => state.roundsBeforeLongBreak,
   )
 
+  /**
+   * Função entregue ao hook `usePomodoro` como callback.
+   * A função inform ao hook: "quando um pomodoro terminar, execute isto".
+   * Ela não roda quando o usuário pausa, pula ou troca de ciclo manualmente.
+   * Ela é chamada somente quando o contador chega a zero durante o estágio de
+   * foco. Nesse momento, se existir uma tarefa atual, o total de pomodoros
+   * concluídos dessa tarefa recebe um incremento.
+   */
   const handlePomodoroComplete = useCallback(() => {
     if (!currentTask) return
 
@@ -61,6 +72,11 @@ export function PomodoroDisplay() {
     isRunning ? pauseTimer() : startTimer()
   }
 
+  /**
+   * Controla o avanço manual do ciclo. Durante um pomodoro em andamento, exige
+   * confirmação antes de descartar o foco atual; em pausas ou ciclos já
+   * concluídos, permite avançar imediatamente para manter o fluxo simples.
+   */
   function handleSkipButtonPress() {
     if (pomodoroState === 'pomodoro' && isRunning && !isPomodoroCompleted) {
       setIsOpen(true)
@@ -94,7 +110,7 @@ export function PomodoroDisplay() {
   }
 
   return (
-    <View className="flex flex-col px-6 py-8">
+    <View className="flex flex-col rounded-2xl border-primary border-l-4 bg-surface-1 p-6">
       <Modal
         visible={isOpen}
         title="Descartar foco atual?"
@@ -105,20 +121,22 @@ export function PomodoroDisplay() {
         onCancel={handleCancelSkipModalButtonPress}
       />
 
-      <View className="flex-row justify-between">
-        <View className="flex-col flex-1">
-          <Text className="font-inter-black text-sm text-primary uppercase">
+      <View className="mb-3 flex-row justify-between">
+        <View className="flex-1 flex-row items-center gap-2">
+          {/* Badge */}
+          <Text className="rounded-md bg-primary px-2 py-1 font-inter-extra-bold text-secondary text-xs uppercase">
             {getPomodoroStateLabel()}
           </Text>
-
-          <Text className="font-inter-black text-lg text-secondary uppercase">
+          {/* Task */}
+          <Text className="font-inter-semi-bold text-tertiary text-xs uppercase tracking-wider">
             {taskNameOrDefaultMessage}
           </Text>
         </View>
 
-        <View className="flex-row items-center justify-center gap-1 p-2 bg-blue-400 rounded-md">
-          <Clock5 size={16} color="#0033FF" />
-          <Text className="text-sm font-inter-bold text-primary">
+        {/* Session Badge */}
+        <View className="flex-row items-center justify-center gap-1 rounded-md bg-primary px-2 py-1">
+          <Clock5 size={12} color="#FFFFFF" strokeWidth={3} />
+          <Text className="font-inter-semi-bold text-secondary text-xs">
             {currentTask
               ? `${currentTask.completedPomodoros}/${currentTask.estimatedPomodoros}`
               : '0/0'}
@@ -126,36 +144,34 @@ export function PomodoroDisplay() {
         </View>
       </View>
 
-      <View>
-        <Text className="font-inter-black text-9xl text-black tracking-tighter">
+      {/* Timer */}
+      <View className="mb-4">
+        <Text className="font-inter-bold text-7xl text-secondary tracking-tighter">
           {formattedTime}
         </Text>
       </View>
 
-      <View className="flex-row gap-3">
-        <View className="flex-1">
-          <Button
-            onPress={handleStartOrPauseButtonPress}
-            className="h-16 flex-row items-center justify-center gap-3 px-8 py-4"
-          >
-            {isRunning ? (
-              <Pause size={20} color="#FFFFFF" />
-            ) : (
-              <Play size={20} color="#FFFFFF" />
-            )}
+      <View className="flex-row items-center justify-center gap-3">
+        <Pressable
+          onPress={handleStartOrPauseButtonPress}
+          className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-secondary"
+        >
+          {isRunning ? (
+            <Pause size={20} strokeWidth={2} color="#000000" />
+          ) : (
+            <Play size={20} strokeWidth={2} color="#000000" />
+          )}
+          <Text className="font-inter-bold text-black text-sm uppercase">
+            {isRunning ? 'Pausar' : 'Iniciar'}
+          </Text>
+        </Pressable>
 
-            <Text className="font-inter-black text-lg text-center text-white tracking-widest uppercase">
-              {isRunning ? 'Pausar' : 'Iniciar'}
-            </Text>
-          </Button>
-        </View>
-
-        <Button
+        <Pressable
           onPress={handleSkipButtonPress}
-          className="h-16 w-16 items-center justify-center"
+          className="h-12 w-12 items-center justify-center rounded-xl border border-outline bg-surface-2"
         >
           <SkipForward size={20} color="#FFFFFF" />
-        </Button>
+        </Pressable>
       </View>
     </View>
   )
