@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 const { getDefaultConfig } = require('expo/metro-config')
 const { withNativeWind } = require('nativewind/metro')
 
@@ -10,7 +10,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (platform === 'web' && moduleName === 'zustand/middleware') {
     return {
       type: 'sourceFile',
-      filePath: path.join(__dirname, 'node_modules/zustand/middleware.js')
+      filePath: path.join(__dirname, 'node_modules/zustand/middleware.js'),
     }
   }
 
