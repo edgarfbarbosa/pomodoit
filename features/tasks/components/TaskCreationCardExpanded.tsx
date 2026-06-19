@@ -27,7 +27,7 @@ export function TaskCreationCardExpanded({
         />
       </View>
 
-      <View className="mt-4 flex-row items-end justify-between">
+      <View className="mt-4 flex-col gap-1">
         <View>
           <Text className="mb-2 font-inter-bold text-[10px] text-tertiary uppercase tracking-wider">
             Pomodoros estimados
@@ -56,7 +56,7 @@ export function TaskCreationCardExpanded({
         </View>
 
         {/* Buttons Add/Cancel */}
-        <View className="flex-row flex-row-reverse">
+        <View className="flex-row-reverse">
           <Pressable
             onPress={onCreateTaskPress}
             className="h-12 w-32 flex-row items-center justify-center rounded-xl bg-primary"
