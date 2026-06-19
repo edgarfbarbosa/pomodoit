@@ -11,6 +11,7 @@ module.exports = {
     extend: {
       fontFamily: {
         inter: ['Inter_400Regular'],
+        'inter-medium': ['Inter_500Medium'],
         'inter-semi-bold': ['Inter_600SemiBold'],
         'inter-bold': ['Inter_700Bold'],
         'inter-extra-bold': ['Inter_800ExtraBold'],
@@ -19,7 +20,7 @@ module.exports = {
       colors: {
         primary: '#0066FF',
         secondary: '#FFFFFF',
-        tertiary: '#A9B5C6',
+        tertiary: '#94A3B8',
         'surface-0': '#09090B',
         'surface-1': '#121317',
         'surface-2': '#25272C',
