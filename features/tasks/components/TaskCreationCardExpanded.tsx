@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp } from 'lucide-react-native'
+import { Minus, Plus } from 'lucide-react-native'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import type { TaskCreationCardExpandedProps } from '../types/task-creation-card-props'
 
@@ -12,62 +12,66 @@ export function TaskCreationCardExpanded({
   onCancelPress,
 }: TaskCreationCardExpandedProps) {
   return (
-    <View className="px-4 mb-4">
-      <View className="w-full bg-white border-solid border-2 border-black p-6">
-        <View>
-          <Text className="text-xs font-inter-extra-bold text-primary uppercase mb-2">
-            Nova tarefa
-          </Text>
+    <View className="w-full rounded-xl border border-outline bg-surface-1 p-5">
+      <View>
+        <Text className="mb-2 font-inter text-tertiary text-xs">
+          Nova tarefa
+        </Text>
 
-          <TextInput
-            placeholder="NOME DA TAREFA"
-            className="task__input"
-            value={taskName}
-            onChangeText={onTaskNameChange}
-          />
-        </View>
+        {/* Input new task */}
+        <TextInput
+          placeholder="Nome da tarefa..."
+          className="h-14 rounded-xl border border-outline bg-surface-2 px-3 font-inter-medium text-base text-secondary -tracking-wide focus:outline-none"
+          value={taskName}
+          onChangeText={onTaskNameChange}
+        />
+      </View>
 
+      <View className="mt-4 flex-row items-end justify-between">
         <View>
-          <Text className="text-xs font-inter-bold text-primary uppercase my-3">
+          <Text className="mb-2 font-inter-bold text-[10px] text-tertiary uppercase tracking-wider">
             Pomodoros estimados
           </Text>
 
-          <View className="flex-row items-center gap-2 mb-2">
-            <Text className="text-5xl font-inter-black text-black">
-              {pomodoroAmount}
-            </Text>
-
-            <Pressable
-              onPress={onIncreasePomodoroPress}
-              className="button__icon border border-tertiary"
-            >
-              <ArrowUp />
-            </Pressable>
-
+          {/* Stepper (+/-) */}
+          <View className="h-11 w-36 flex-row items-center justify-center gap-4 overflow-hidden rounded-lg border border-outline bg-surface-2">
             <Pressable
               onPress={onDecreasePomodoroPress}
-              className="button__icon border border-tertiary"
+              className="h-full w-7 items-center justify-center"
             >
-              <ArrowDown />
+              <Minus width={20} color="#FFFFFF" />
+            </Pressable>
+            <View className="h-full w-9 items-center justify-center">
+              <Text className="text-center font-inter-bold text-base text-secondary">
+                {pomodoroAmount}
+              </Text>
+            </View>
+            <Pressable
+              onPress={onIncreasePomodoroPress}
+              className="h-full w-7 items-center justify-center"
+            >
+              <Plus width={20} color="#FFFFFF" />
             </Pressable>
           </View>
         </View>
 
-        <View className="flex-row">
+        {/* Buttons Add/Cancel */}
+        <View className="flex-row flex-row-reverse">
           <Pressable
             onPress={onCreateTaskPress}
-            className="button__text bg-black"
+            className="h-12 w-32 flex-row items-center justify-center rounded-xl bg-primary"
           >
-            <Text className="text-white font-inter-bold uppercase">
+            <Plus width={16} color="#FFFFFF" />
+            <Text className="font-inter-bold text-base text-white">
               Adicionar
             </Text>
           </Pressable>
 
           <Pressable
             onPress={onCancelPress}
-            className="button__text bg-transparent"
+            className="h-12 w-32 items-center justify-center rounded-xl bg-transparent"
           >
-            <Text className="text-black font-inter-bold uppercase underline">
+            <Text className="font-inter-bold text-tertiary underline">
               Cancelar
             </Text>
           </Pressable>

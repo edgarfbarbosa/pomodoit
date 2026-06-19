@@ -4,18 +4,16 @@ import type { TaskCreationCardProps } from '../types/task-creation-card-props'
 
 export function TaskCreationCard({ onOpenFormPress }: TaskCreationCardProps) {
   return (
-    <View className="px-4 mb-4">
+    <View className="min-h-20 w-full">
       <Pressable
         onPress={onOpenFormPress}
-        className="items-center justify-center h-36 w-full rounded-xl bg-white border-dashed border-2 border-tertiary p-6"
+        className="h-full w-full flex-row items-center justify-start gap-3 rounded-xl border border-outline bg-surface-1 px-4"
       >
-        <View className="items-center">
-          <Plus size={32} color="#777777" />
+        <Plus size={22} color="#0066FF" />
 
-          <Text className="text-base font-inter-bold text-tertiary uppercase">
-            Adicionar tarefa
-          </Text>
-        </View>
+        <Text className="font-inter text-base text-tertiary -tracking-wide">
+          Adicionar tarefa
+        </Text>
       </Pressable>
     </View>
   )
