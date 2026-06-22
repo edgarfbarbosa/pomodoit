@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import { PomodoroTimerSettingsCard } from '../components/PomodoroTimerSettingsCard'
 import usePomodoroTimerSettings from '../stores/usePomodoroTimerSettings'
@@ -15,10 +16,6 @@ export function PomodoroTimerSettingsScreen() {
     (state) => state.longBreakMinutes,
   )
 
-  const roundsBeforeLongBreak = usePomodoroTimerSettings(
-    (state) => state.roundsBeforeLongBreak,
-  )
-
   const setPomodoroMinutes = usePomodoroTimerSettings(
     (state) => state.setPomodoroMinutes,
   )
@@ -31,47 +28,86 @@ export function PomodoroTimerSettingsScreen() {
     (state) => state.setLongBreakMinutes,
   )
 
-  const setRoundsBeforeLongBreak = usePomodoroTimerSettings(
-    (state) => state.setRoundsBeforeLongBreak,
-  )
+  const [draftSettings, setDraftSettings] = useState({
+    pomodoroMinutes,
+    shortBreakMinutes,
+    longBreakMinutes,
+  })
 
-  const resetPomodoroTimerSettings = usePomodoroTimerSettings(
-    (state) => state.resetPomodoroTimerSettings,
-  )
+  useEffect(() => {
+    setDraftSettings({
+      pomodoroMinutes,
+      shortBreakMinutes,
+      longBreakMinutes,
+    })
+  }, [longBreakMinutes, pomodoroMinutes, shortBreakMinutes])
+
+  function handleSaveSettings() {
+    setPomodoroMinutes(draftSettings.pomodoroMinutes)
+    setShortBreakMinutes(draftSettings.shortBreakMinutes)
+    setLongBreakMinutes(draftSettings.longBreakMinutes)
+  }
+
+  function handleResetSettings() {
+    setDraftSettings({
+      pomodoroMinutes: 25,
+      shortBreakMinutes: 5,
+      longBreakMinutes: 15,
+    })
+  }
 
   return (
-    <ScrollView className="flex-col flex-1 bg-surface-2 px-6 py-8">
+    <ScrollView className="flex-1 flex-col bg-surface-0 px-6 py-8">
       <PomodoroTimerSettingsCard
         label="Foco"
-        value={pomodoroMinutes}
-        onChange={setPomodoroMinutes}
+        value={draftSettings.pomodoroMinutes}
+        min={5}
+        max={90}
+        onChange={(pomodoroMinutes) =>
+          setDraftSettings((settings) => ({
+            ...settings,
+            pomodoroMinutes,
+          }))
+        }
       />
       <PomodoroTimerSettingsCard
         label="Pausa curta"
-        value={shortBreakMinutes}
-        onChange={setShortBreakMinutes}
+        value={draftSettings.shortBreakMinutes}
+        min={1}
+        max={15}
+        onChange={(shortBreakMinutes) =>
+          setDraftSettings((settings) => ({
+            ...settings,
+            shortBreakMinutes,
+          }))
+        }
       />
       <PomodoroTimerSettingsCard
         label="Pausa longa"
-        value={longBreakMinutes}
-        onChange={setLongBreakMinutes}
-      />
-      <PomodoroTimerSettingsCard
-        label="Ciclos"
-        value={roundsBeforeLongBreak}
-        onChange={setRoundsBeforeLongBreak}
+        value={draftSettings.longBreakMinutes}
+        min={5}
+        max={45}
+        onChange={(longBreakMinutes) =>
+          setDraftSettings((settings) => ({
+            ...settings,
+            longBreakMinutes,
+          }))
+        }
       />
       <View className="flex-col">
-        <Pressable className="button__text w-full bg-secondary">
-          <Text className="font-inter-extra-bold uppercase text-white">
+        <Pressable
+          onPress={handleSaveSettings}
+          className="button__text w-full bg-secondary"
+        >
+          <Text className="font-inter-extra-bold text-white uppercase">
             Salvar alterações
           </Text>
         </Pressable>
         <Pressable
-          onPress={resetPomodoroTimerSettings}
+          onPress={handleResetSettings}
           className="button__text w-full bg-transparent"
         >
-          <Text className="font-inter-extra-bold uppercase text-tertiary underline">
+          <Text className="font-inter-extra-bold text-tertiary uppercase underline">
             Resetar para o padrão
           </Text>
         </Pressable>
