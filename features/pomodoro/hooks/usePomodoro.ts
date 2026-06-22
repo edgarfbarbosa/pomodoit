@@ -32,6 +32,28 @@ export function usePomodoro(
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
   }, [minutes, seconds])
 
+  useEffect(() => {
+    if (isRunning) return
+
+    if (pomodoroState === 'pomodoro') {
+      setCountdown(pomodoroInSeconds)
+      return
+    }
+
+    if (pomodoroState === 'shortBreak') {
+      setCountdown(shortBreakInSeconds)
+      return
+    }
+
+    setCountdown(longBreakInSeconds)
+  }, [
+    isRunning,
+    longBreakInSeconds,
+    pomodoroInSeconds,
+    pomodoroState,
+    shortBreakInSeconds,
+  ])
+
   function startTimer() {
     if (countdown === 0) return
 
