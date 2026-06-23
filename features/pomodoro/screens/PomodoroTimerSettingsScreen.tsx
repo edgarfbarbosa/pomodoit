@@ -94,20 +94,20 @@ export function PomodoroTimerSettingsScreen() {
           }))
         }
       />
-      <View className="flex-col">
+      <View className="flex-col gap-2">
         <Pressable
           onPress={handleSaveSettings}
-          className="button__text w-full bg-secondary"
+          className="h-14 w-full items-center justify-center rounded-lg border border-outline bg-primary"
         >
-          <Text className="font-inter-extra-bold text-white uppercase">
+          <Text className="font-inter-medium text-secondary uppercase -tracking-wider">
             Salvar alterações
           </Text>
         </Pressable>
         <Pressable
           onPress={handleResetSettings}
-          className="button__text w-full bg-transparent"
+          className="h-14 w-full items-center justify-center rounded-lg border border-[#FF4444]/50 bg-surface-1"
         >
-          <Text className="font-inter-extra-bold text-tertiary uppercase underline">
+          <Text className="font-inter-medium text-[#FF4444] -tracking-wider">
             Resetar para o padrão
           </Text>
         </Pressable>
