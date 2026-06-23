@@ -28,6 +28,10 @@ export function PomodoroTimerSettingsScreen() {
     (state) => state.setLongBreakMinutes,
   )
 
+  const resetPomodoroTimerSettings = usePomodoroTimerSettings(
+    (state) => state.resetPomodoroTimerSettings,
+  )
+
   const [draftSettings, setDraftSettings] = useState({
     pomodoroMinutes,
     shortBreakMinutes,
@@ -49,11 +53,7 @@ export function PomodoroTimerSettingsScreen() {
   }
 
   function handleResetSettings() {
-    setDraftSettings({
-      pomodoroMinutes: 25,
-      shortBreakMinutes: 5,
-      longBreakMinutes: 15,
-    })
+    resetPomodoroTimerSettings()
   }
 
   return (

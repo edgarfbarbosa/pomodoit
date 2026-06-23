@@ -20,6 +20,8 @@ export function usePomodoro(
   const [countdown, setCountdown] = useState(pomodoroInSeconds)
   const [isRunning, setIsRunning] = useState(false)
   const [isPomodoroCompleted, setIsPomodoroCompleted] = useState(false)
+  const [hasStartedCurrentSession, setHasStartedCurrentSession] =
+    useState(false)
 
   const [pomodoroState, setPomodoroState] = useState<
     'pomodoro' | 'shortBreak' | 'longBreak'
@@ -33,7 +35,7 @@ export function usePomodoro(
   }, [minutes, seconds])
 
   useEffect(() => {
-    if (isRunning) return
+    if (hasStartedCurrentSession) return
 
     if (pomodoroState === 'pomodoro') {
       setCountdown(pomodoroInSeconds)
@@ -47,7 +49,7 @@ export function usePomodoro(
 
     setCountdown(longBreakInSeconds)
   }, [
-    isRunning,
+    hasStartedCurrentSession,
     longBreakInSeconds,
     pomodoroInSeconds,
     pomodoroState,
@@ -57,6 +59,7 @@ export function usePomodoro(
   function startTimer() {
     if (countdown === 0) return
 
+    setHasStartedCurrentSession(true)
     setIsRunning(true)
   }
 
@@ -67,6 +70,7 @@ export function usePomodoro(
   const switchPomodoroState = useCallback(() => {
     setIsRunning(false)
     setIsPomodoroCompleted(false)
+    setHasStartedCurrentSession(false)
 
     if (pomodoroState === 'pomodoro') {
       if (

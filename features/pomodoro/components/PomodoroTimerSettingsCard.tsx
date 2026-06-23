@@ -1,4 +1,5 @@
 import Slider from '@react-native-community/slider'
+import { useEffect, useState } from 'react'
 import { Text, TextInput, View } from 'react-native'
 
 type PomodoroTimerSettingsCardProps = {
@@ -16,6 +17,45 @@ export function PomodoroTimerSettingsCard({
   max,
   onChange,
 }: PomodoroTimerSettingsCardProps) {
+  const [inputValue, setInputValue] = useState(String(value))
+
+  useEffect(() => {
+    setInputValue(String(value))
+  }, [value])
+
+  function handleTextChange(nextValue: string) {
+    setInputValue(nextValue)
+
+    const numericValue = Number(nextValue)
+
+    if (
+      Number.isInteger(numericValue) &&
+      numericValue >= min &&
+      numericValue <= max
+    ) {
+      onChange(numericValue)
+    }
+  }
+
+  function handleTextEndEditing() {
+    const numericValue = Number(inputValue)
+
+    if (
+      !Number.isInteger(numericValue) ||
+      numericValue < min ||
+      numericValue > max
+    ) {
+      setInputValue(String(value))
+    }
+  }
+
+  function handleSliderChange(nextValue: number) {
+    const numericValue = Math.round(nextValue)
+
+    setInputValue(String(numericValue))
+    onChange(numericValue)
+  }
+
   return (
     <View className="mb-3 flex-col rounded-xl border border-[#1A1B1F] bg-surface-1 p-5">
       <View className="flex-row items-center justify-between">
@@ -24,8 +64,9 @@ export function PomodoroTimerSettingsCard({
         </Text>
 
         <TextInput
-          value={String(value)}
-          onChangeText={(value) => onChange(Number(value))}
+          value={inputValue}
+          onChangeText={handleTextChange}
+          onEndEditing={handleTextEndEditing}
           keyboardType="number-pad"
           className="h-8 w-16 p-0 text-right font-inter-bold text-[32px] text-secondary leading-8"
         />
@@ -37,7 +78,7 @@ export function PomodoroTimerSettingsCard({
           maximumValue={max}
           step={1}
           value={value}
-          onValueChange={onChange}
+          onValueChange={handleSliderChange}
           minimumTrackTintColor="#0066FF"
           maximumTrackTintColor="#2D2E32"
           thumbTintColor="#FFFFFF"
