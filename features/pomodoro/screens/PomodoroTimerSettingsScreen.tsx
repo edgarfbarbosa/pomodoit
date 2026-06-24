@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import { PomodoroCyclesSettingsCard } from '../components/PomodoroCyclesSettingsCard'
+import { PomodoroTimerPreferencesCard } from '../components/PomodoroTimerPreferencesCard'
 import { PomodoroTimerSettingsCard } from '../components/PomodoroTimerSettingsCard'
 import usePomodoroTimerSettings from '../stores/usePomodoroTimerSettings'
 
@@ -21,6 +22,14 @@ export function PomodoroTimerSettingsScreen() {
     (state) => state.roundsBeforeLongBreak,
   )
 
+  const autoStartBreaks = usePomodoroTimerSettings(
+    (state) => state.autoStartBreaks,
+  )
+
+  const autoStartFocus = usePomodoroTimerSettings(
+    (state) => state.autoStartFocus,
+  )
+
   const setPomodoroTimerSettings = usePomodoroTimerSettings(
     (state) => state.setPomodoroTimerSettings,
   )
@@ -34,6 +43,8 @@ export function PomodoroTimerSettingsScreen() {
     shortBreakMinutes,
     longBreakMinutes,
     roundsBeforeLongBreak,
+    autoStartBreaks,
+    autoStartFocus,
   })
 
   useEffect(() => {
@@ -42,8 +53,12 @@ export function PomodoroTimerSettingsScreen() {
       shortBreakMinutes,
       longBreakMinutes,
       roundsBeforeLongBreak,
+      autoStartBreaks,
+      autoStartFocus,
     })
   }, [
+    autoStartBreaks,
+    autoStartFocus,
     longBreakMinutes,
     pomodoroMinutes,
     roundsBeforeLongBreak,
@@ -60,6 +75,10 @@ export function PomodoroTimerSettingsScreen() {
 
   return (
     <ScrollView className="flex-1 flex-col bg-surface-0 px-6 py-8">
+      <Text className="mb-3 font-inter-bold text-tertiary text-xs uppercase leading-[14px] tracking-[0.6px]">
+        Intervalos de tempo
+      </Text>
+
       <PomodoroTimerSettingsCard
         label="Foco"
         value={draftSettings.pomodoroMinutes}
@@ -102,6 +121,22 @@ export function PomodoroTimerSettingsScreen() {
           setDraftSettings((settings) => ({
             ...settings,
             roundsBeforeLongBreak,
+          }))
+        }
+      />
+      <PomodoroTimerPreferencesCard
+        autoStartBreaks={draftSettings.autoStartBreaks}
+        autoStartFocus={draftSettings.autoStartFocus}
+        onAutoStartBreaksChange={(autoStartBreaks) =>
+          setDraftSettings((settings) => ({
+            ...settings,
+            autoStartBreaks,
+          }))
+        }
+        onAutoStartFocusChange={(autoStartFocus) =>
+          setDraftSettings((settings) => ({
+            ...settings,
+            autoStartFocus,
           }))
         }
       />

@@ -37,6 +37,14 @@ export function PomodoroDisplay() {
     (state) => state.roundsBeforeLongBreak,
   )
 
+  const autoStartBreaks = usePomodoroTimerSettings(
+    (state) => state.autoStartBreaks,
+  )
+
+  const autoStartFocus = usePomodoroTimerSettings(
+    (state) => state.autoStartFocus,
+  )
+
   /**
    * Função entregue ao hook `usePomodoro` como callback.
    * A função inform ao hook: "quando um pomodoro terminar, execute isto".
@@ -65,6 +73,8 @@ export function PomodoroDisplay() {
     longBreakMinutes,
     handlePomodoroComplete,
     roundsBeforeLongBreak,
+    autoStartBreaks,
+    autoStartFocus,
   )
 
   function handleStartOrPauseButtonPress() {

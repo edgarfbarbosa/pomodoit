@@ -21,7 +21,7 @@ export function PomodoroTimerSettingsCard({
   }
 
   return (
-    <View className="mb-3 flex-col rounded-xl border border-[#1A1B1F] bg-surface-1 p-5">
+    <View className="mb-3 flex-col rounded-xl border border-outline bg-surface-1 p-5">
       <View className="flex-row items-center justify-between">
         <Text className="font-inter-semi-bold text-lg text-white tracking-[-0.18px]">
           {label}

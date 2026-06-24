@@ -6,6 +6,8 @@ const DEFAULT_POMODORO_MINUTES = 25
 const DEFAULT_SHORT_BREAK_MINUTES = 5
 const DEFAULT_LONG_BREAK_MINUTES = 15
 const DEFAULT_ROUNDS_BEFORE_LONG_BREAK = 4
+const DEFAULT_AUTO_START_BREAKS = true
+const DEFAULT_AUTO_START_FOCUS = false
 
 const MIN_POMODORO_MINUTES = 5
 const MAX_POMODORO_MINUTES = 90
@@ -21,6 +23,8 @@ type PomodoroTimerSettings = {
   shortBreakMinutes: number
   longBreakMinutes: number
   roundsBeforeLongBreak: number
+  autoStartBreaks: boolean
+  autoStartFocus: boolean
 }
 
 interface PomodoroTimerSettingsStore extends PomodoroTimerSettings {
@@ -28,6 +32,8 @@ interface PomodoroTimerSettingsStore extends PomodoroTimerSettings {
   setShortBreakMinutes: (shortBreakMinutes: number) => void
   setLongBreakMinutes: (longBreakMinutes: number) => void
   setRoundsBeforeLongBreak: (roundsBeforeLongBreak: number) => void
+  setAutoStartBreaks: (autoStartBreaks: boolean) => void
+  setAutoStartFocus: (autoStartFocus: boolean) => void
   setPomodoroTimerSettings: (settings: PomodoroTimerSettings) => void
   resetPomodoroTimerSettings: () => void
 }
@@ -52,6 +58,10 @@ function getValidValue(
   defaultValue: number,
 ) {
   return isValidInteger(value, min, max) ? value : defaultValue
+}
+
+function getValidBoolean(value: unknown, defaultValue: boolean) {
+  return typeof value === 'boolean' ? value : defaultValue
 }
 
 function getValidPomodoroTimerSettings(
@@ -82,6 +92,14 @@ function getValidPomodoroTimerSettings(
       MAX_ROUNDS_BEFORE_LONG_BREAK,
       DEFAULT_ROUNDS_BEFORE_LONG_BREAK,
     ),
+    autoStartBreaks: getValidBoolean(
+      settings.autoStartBreaks,
+      DEFAULT_AUTO_START_BREAKS,
+    ),
+    autoStartFocus: getValidBoolean(
+      settings.autoStartFocus,
+      DEFAULT_AUTO_START_FOCUS,
+    ),
   }
 }
 
@@ -92,6 +110,8 @@ const pomodoroTimerSettingsStore: StateCreator<PomodoroTimerSettingsStore> = (
   shortBreakMinutes: DEFAULT_SHORT_BREAK_MINUTES,
   longBreakMinutes: DEFAULT_LONG_BREAK_MINUTES,
   roundsBeforeLongBreak: DEFAULT_ROUNDS_BEFORE_LONG_BREAK,
+  autoStartBreaks: DEFAULT_AUTO_START_BREAKS,
+  autoStartFocus: DEFAULT_AUTO_START_FOCUS,
 
   setPomodoroMinutes: (pomodoroMinutes) =>
     set((state) => ({
@@ -133,6 +153,16 @@ const pomodoroTimerSettingsStore: StateCreator<PomodoroTimerSettingsStore> = (
       ),
     })),
 
+  setAutoStartBreaks: (autoStartBreaks) =>
+    set((state) => ({
+      autoStartBreaks: getValidBoolean(autoStartBreaks, state.autoStartBreaks),
+    })),
+
+  setAutoStartFocus: (autoStartFocus) =>
+    set((state) => ({
+      autoStartFocus: getValidBoolean(autoStartFocus, state.autoStartFocus),
+    })),
+
   setPomodoroTimerSettings: (settings) =>
     set(() => getValidPomodoroTimerSettings(settings)),
 
@@ -142,6 +172,8 @@ const pomodoroTimerSettingsStore: StateCreator<PomodoroTimerSettingsStore> = (
       shortBreakMinutes: DEFAULT_SHORT_BREAK_MINUTES,
       longBreakMinutes: DEFAULT_LONG_BREAK_MINUTES,
       roundsBeforeLongBreak: DEFAULT_ROUNDS_BEFORE_LONG_BREAK,
+      autoStartBreaks: DEFAULT_AUTO_START_BREAKS,
+      autoStartFocus: DEFAULT_AUTO_START_FOCUS,
     })),
 })
 
@@ -154,6 +186,8 @@ const usePomodoroTimerSettings = create<PomodoroTimerSettingsStore>()(
       shortBreakMinutes: state.shortBreakMinutes,
       longBreakMinutes: state.longBreakMinutes,
       roundsBeforeLongBreak: state.roundsBeforeLongBreak,
+      autoStartBreaks: state.autoStartBreaks,
+      autoStartFocus: state.autoStartFocus,
     }),
     merge: (persistedState, currentState) => ({
       ...currentState,

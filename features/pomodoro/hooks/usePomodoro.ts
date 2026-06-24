@@ -4,6 +4,8 @@ const DEFAULT_POMODORO_MINUTES = 25
 const DEFAULT_SHORT_BREAK_MINUTES = 5
 const DEFAULT_LONG_BREAK_MINUTES = 15
 const DEFAULT_ROUNDS_BEFORE_LONG_BREAK = 4
+const DEFAULT_AUTO_START_BREAKS = true
+const DEFAULT_AUTO_START_FOCUS = false
 
 export function usePomodoro(
   pomodoro: number = DEFAULT_POMODORO_MINUTES,
@@ -11,6 +13,8 @@ export function usePomodoro(
   longBreak: number = DEFAULT_LONG_BREAK_MINUTES,
   onPomodoroComplete?: () => void,
   roundsBeforeLongBreak: number = DEFAULT_ROUNDS_BEFORE_LONG_BREAK,
+  autoStartBreaks: boolean = DEFAULT_AUTO_START_BREAKS,
+  autoStartFocus: boolean = DEFAULT_AUTO_START_FOCUS,
 ) {
   const pomodoroInSeconds = pomodoro * 60
   const shortBreakInSeconds = shortBreak * 60
@@ -73,44 +77,53 @@ export function usePomodoro(
     }
   }, [roundsBeforeLongBreak])
 
-  const switchPomodoroState = useCallback(() => {
-    setIsRunning(false)
-    setIsPomodoroCompleted(false)
-    setHasStartedCurrentSession(false)
+  const switchPomodoroState = useCallback(
+    (shouldAutoStart = false) => {
+      const shouldAutoStartNextSession =
+        shouldAutoStart &&
+        (pomodoroState === 'pomodoro' ? autoStartBreaks : autoStartFocus)
 
-    if (pomodoroState === 'pomodoro') {
-      if (isPomodoroCompleted && roundsBeforeLongBreak > 0) {
-        const nextCompletedFocusSessions = completedFocusSessions + 1
+      setIsRunning(shouldAutoStartNextSession)
+      setIsPomodoroCompleted(false)
+      setHasStartedCurrentSession(shouldAutoStartNextSession)
 
-        if (nextCompletedFocusSessions >= roundsBeforeLongBreak) {
-          setCompletedFocusSessions(0)
-          setPomodoroState('longBreak')
-          setCountdown(longBreakInSeconds)
-          return
+      if (pomodoroState === 'pomodoro') {
+        if (isPomodoroCompleted && roundsBeforeLongBreak > 0) {
+          const nextCompletedFocusSessions = completedFocusSessions + 1
+
+          if (nextCompletedFocusSessions >= roundsBeforeLongBreak) {
+            setCompletedFocusSessions(0)
+            setPomodoroState('longBreak')
+            setCountdown(longBreakInSeconds)
+            return
+          }
+
+          setCompletedFocusSessions(nextCompletedFocusSessions)
         }
 
-        setCompletedFocusSessions(nextCompletedFocusSessions)
+        setPomodoroState('shortBreak')
+        setCountdown(shortBreakInSeconds)
+        return
       }
 
-      setPomodoroState('shortBreak')
-      setCountdown(shortBreakInSeconds)
-      return
-    }
-
-    if (pomodoroState === 'shortBreak' || pomodoroState === 'longBreak') {
-      setPomodoroState('pomodoro')
-      setCountdown(pomodoroInSeconds)
-      return
-    }
-  }, [
-    pomodoroState,
-    isPomodoroCompleted,
-    completedFocusSessions,
-    roundsBeforeLongBreak,
-    longBreakInSeconds,
-    shortBreakInSeconds,
-    pomodoroInSeconds,
-  ])
+      if (pomodoroState === 'shortBreak' || pomodoroState === 'longBreak') {
+        setPomodoroState('pomodoro')
+        setCountdown(pomodoroInSeconds)
+        return
+      }
+    },
+    [
+      pomodoroState,
+      autoStartBreaks,
+      autoStartFocus,
+      isPomodoroCompleted,
+      completedFocusSessions,
+      roundsBeforeLongBreak,
+      longBreakInSeconds,
+      shortBreakInSeconds,
+      pomodoroInSeconds,
+    ],
+  )
 
   useEffect(() => {
     if (!isRunning) return
@@ -142,17 +155,17 @@ export function usePomodoro(
       pomodoroState === 'pomodoro' &&
       isPomodoroCompleted
     ) {
-      switchPomodoroState()
+      switchPomodoroState(true)
       return
     }
 
     if (countdown === 0 && pomodoroState === 'shortBreak') {
-      switchPomodoroState()
+      switchPomodoroState(true)
       return
     }
 
     if (countdown === 0 && pomodoroState === 'longBreak') {
-      switchPomodoroState()
+      switchPomodoroState(true)
       return
     }
   }, [countdown, isPomodoroCompleted, pomodoroState, switchPomodoroState])
