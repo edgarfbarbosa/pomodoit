@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
+import { PomodoroCyclesSettingsCard } from '../components/PomodoroCyclesSettingsCard'
 import { PomodoroTimerSettingsCard } from '../components/PomodoroTimerSettingsCard'
 import usePomodoroTimerSettings from '../stores/usePomodoroTimerSettings'
 
@@ -32,6 +33,7 @@ export function PomodoroTimerSettingsScreen() {
     pomodoroMinutes,
     shortBreakMinutes,
     longBreakMinutes,
+    roundsBeforeLongBreak,
   })
 
   useEffect(() => {
@@ -39,14 +41,17 @@ export function PomodoroTimerSettingsScreen() {
       pomodoroMinutes,
       shortBreakMinutes,
       longBreakMinutes,
-    })
-  }, [longBreakMinutes, pomodoroMinutes, shortBreakMinutes])
-
-  function handleSaveSettings() {
-    setPomodoroTimerSettings({
-      ...draftSettings,
       roundsBeforeLongBreak,
     })
+  }, [
+    longBreakMinutes,
+    pomodoroMinutes,
+    roundsBeforeLongBreak,
+    shortBreakMinutes,
+  ])
+
+  function handleSaveSettings() {
+    setPomodoroTimerSettings(draftSettings)
   }
 
   function handleResetSettings() {
@@ -88,6 +93,15 @@ export function PomodoroTimerSettingsScreen() {
           setDraftSettings((settings) => ({
             ...settings,
             longBreakMinutes,
+          }))
+        }
+      />
+      <PomodoroCyclesSettingsCard
+        value={draftSettings.roundsBeforeLongBreak}
+        onChange={(roundsBeforeLongBreak) =>
+          setDraftSettings((settings) => ({
+            ...settings,
+            roundsBeforeLongBreak,
           }))
         }
       />

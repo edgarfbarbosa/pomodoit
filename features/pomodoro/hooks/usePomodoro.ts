@@ -75,6 +75,7 @@ export function usePomodoro(
     if (pomodoroState === 'pomodoro') {
       if (
         isPomodoroCompleted &&
+        roundsBeforeLongBreak > 0 &&
         completedPomodoros % roundsBeforeLongBreak === 0
       ) {
         setPomodoroState('longBreak')
