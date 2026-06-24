@@ -1,6 +1,5 @@
 import Slider from '@react-native-community/slider'
-import { useEffect, useState } from 'react'
-import { Text, TextInput, View } from 'react-native'
+import { Text, View } from 'react-native'
 
 type PomodoroTimerSettingsCardProps = {
   label: string
@@ -17,43 +16,8 @@ export function PomodoroTimerSettingsCard({
   max,
   onChange,
 }: PomodoroTimerSettingsCardProps) {
-  const [inputValue, setInputValue] = useState(String(value))
-
-  useEffect(() => {
-    setInputValue(String(value))
-  }, [value])
-
-  function handleTextChange(nextValue: string) {
-    setInputValue(nextValue)
-
-    const numericValue = Number(nextValue)
-
-    if (
-      Number.isInteger(numericValue) &&
-      numericValue >= min &&
-      numericValue <= max
-    ) {
-      onChange(numericValue)
-    }
-  }
-
-  function handleTextEndEditing() {
-    const numericValue = Number(inputValue)
-
-    if (
-      !Number.isInteger(numericValue) ||
-      numericValue < min ||
-      numericValue > max
-    ) {
-      setInputValue(String(value))
-    }
-  }
-
   function handleSliderChange(nextValue: number) {
-    const numericValue = Math.round(nextValue)
-
-    setInputValue(String(numericValue))
-    onChange(numericValue)
+    onChange(Math.round(nextValue))
   }
 
   return (
@@ -63,13 +27,9 @@ export function PomodoroTimerSettingsCard({
           {label}
         </Text>
 
-        <TextInput
-          value={inputValue}
-          onChangeText={handleTextChange}
-          onEndEditing={handleTextEndEditing}
-          keyboardType="number-pad"
-          className="h-8 w-16 p-0 text-right font-inter-bold text-[32px] text-secondary leading-8"
-        />
+        <Text className="h-8 w-16 p-0 text-right font-inter-bold text-[32px] text-secondary leading-8">
+          {value}
+        </Text>
       </View>
 
       <View className="mt-4">

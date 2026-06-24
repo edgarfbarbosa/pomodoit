@@ -16,16 +16,12 @@ export function PomodoroTimerSettingsScreen() {
     (state) => state.longBreakMinutes,
   )
 
-  const setPomodoroMinutes = usePomodoroTimerSettings(
-    (state) => state.setPomodoroMinutes,
+  const roundsBeforeLongBreak = usePomodoroTimerSettings(
+    (state) => state.roundsBeforeLongBreak,
   )
 
-  const setShortBreakMinutes = usePomodoroTimerSettings(
-    (state) => state.setShortBreakMinutes,
-  )
-
-  const setLongBreakMinutes = usePomodoroTimerSettings(
-    (state) => state.setLongBreakMinutes,
+  const setPomodoroTimerSettings = usePomodoroTimerSettings(
+    (state) => state.setPomodoroTimerSettings,
   )
 
   const resetPomodoroTimerSettings = usePomodoroTimerSettings(
@@ -47,9 +43,10 @@ export function PomodoroTimerSettingsScreen() {
   }, [longBreakMinutes, pomodoroMinutes, shortBreakMinutes])
 
   function handleSaveSettings() {
-    setPomodoroMinutes(draftSettings.pomodoroMinutes)
-    setShortBreakMinutes(draftSettings.shortBreakMinutes)
-    setLongBreakMinutes(draftSettings.longBreakMinutes)
+    setPomodoroTimerSettings({
+      ...draftSettings,
+      roundsBeforeLongBreak,
+    })
   }
 
   function handleResetSettings() {
