@@ -64,7 +64,6 @@ export function PomodoroDisplay() {
     shortBreakMinutes,
     longBreakMinutes,
     handlePomodoroComplete,
-    currentTask?.completedPomodoros,
     roundsBeforeLongBreak,
   )
 

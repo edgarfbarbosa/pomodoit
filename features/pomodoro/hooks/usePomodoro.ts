@@ -10,7 +10,6 @@ export function usePomodoro(
   shortBreak: number = DEFAULT_SHORT_BREAK_MINUTES,
   longBreak: number = DEFAULT_LONG_BREAK_MINUTES,
   onPomodoroComplete?: () => void,
-  completedPomodoros: number = 0,
   roundsBeforeLongBreak: number = DEFAULT_ROUNDS_BEFORE_LONG_BREAK,
 ) {
   const pomodoroInSeconds = pomodoro * 60
@@ -20,6 +19,7 @@ export function usePomodoro(
   const [countdown, setCountdown] = useState(pomodoroInSeconds)
   const [isRunning, setIsRunning] = useState(false)
   const [isPomodoroCompleted, setIsPomodoroCompleted] = useState(false)
+  const [completedFocusSessions, setCompletedFocusSessions] = useState(0)
   const [hasStartedCurrentSession, setHasStartedCurrentSession] =
     useState(false)
 
@@ -67,20 +67,29 @@ export function usePomodoro(
     setIsRunning(false)
   }
 
+  useEffect(() => {
+    if (roundsBeforeLongBreak === 0) {
+      setCompletedFocusSessions(0)
+    }
+  }, [roundsBeforeLongBreak])
+
   const switchPomodoroState = useCallback(() => {
     setIsRunning(false)
     setIsPomodoroCompleted(false)
     setHasStartedCurrentSession(false)
 
     if (pomodoroState === 'pomodoro') {
-      if (
-        isPomodoroCompleted &&
-        roundsBeforeLongBreak > 0 &&
-        completedPomodoros % roundsBeforeLongBreak === 0
-      ) {
-        setPomodoroState('longBreak')
-        setCountdown(longBreakInSeconds)
-        return
+      if (isPomodoroCompleted && roundsBeforeLongBreak > 0) {
+        const nextCompletedFocusSessions = completedFocusSessions + 1
+
+        if (nextCompletedFocusSessions >= roundsBeforeLongBreak) {
+          setCompletedFocusSessions(0)
+          setPomodoroState('longBreak')
+          setCountdown(longBreakInSeconds)
+          return
+        }
+
+        setCompletedFocusSessions(nextCompletedFocusSessions)
       }
 
       setPomodoroState('shortBreak')
@@ -96,7 +105,7 @@ export function usePomodoro(
   }, [
     pomodoroState,
     isPomodoroCompleted,
-    completedPomodoros,
+    completedFocusSessions,
     roundsBeforeLongBreak,
     longBreakInSeconds,
     shortBreakInSeconds,
