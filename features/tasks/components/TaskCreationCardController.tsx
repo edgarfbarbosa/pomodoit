@@ -31,6 +31,7 @@ export function TaskCreationCardController() {
       current: false,
       estimatedPomodoros: pomodoroAmount,
       completedPomodoros: 0,
+      isCompleted: false,
     })
 
     setTaskName('')

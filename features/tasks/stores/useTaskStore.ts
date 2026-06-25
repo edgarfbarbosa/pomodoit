@@ -8,6 +8,8 @@ interface TaskStore {
   createTask: (task: Task) => void
   deleteTask: (id: string) => void
   updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) => void
+  setCompletedTask: (id: string) => void
+  setPendingTask: (id: string) => void
   setCurrentTask: (id: string) => void
   setCompletedPomodoros: (id: string, completedPomodoros: number) => void
 }
@@ -19,8 +21,9 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
       name: 'Desenvolver meu projeto',
       current: true,
       estimatedPomodoros: 3,
-      completedPomodoros: 0
-    }
+      completedPomodoros: 0,
+      isCompleted: false,
+    },
   ],
 
   createTask: (task: Task) =>
@@ -29,29 +32,43 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
   updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, ...data } : task
-      )
+        task.id === id ? { ...task, ...data } : task,
+      ),
     })),
 
   deleteTask: (id: string) =>
     set((state) => ({
-      tasks: state.tasks.filter((task) => task.id !== id)
+      tasks: state.tasks.filter((task) => task.id !== id),
+    })),
+
+  setCompletedTask: (id: string) =>
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === id ? { ...task, isCompleted: true } : task,
+      ),
+    })),
+
+  setPendingTask: (id: string) =>
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === id ? { ...task, isCompleted: false } : task,
+      ),
     })),
 
   setCurrentTask: (id: string) =>
     set((state) => ({
       tasks: state.tasks.map((task) => ({
         ...task,
-        current: task.id === id
-      }))
+        current: task.id === id,
+      })),
     })),
 
   setCompletedPomodoros: (id: string, completedPomodoros: number) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, completedPomodoros } : task
-      )
-    }))
+        task.id === id ? { ...task, completedPomodoros } : task,
+      ),
+    })),
 })
 
 const useTaskStore = create<TaskStore>()(
@@ -59,9 +76,9 @@ const useTaskStore = create<TaskStore>()(
     name: 'pomodoit-task-store',
     storage: createJSONStorage(() => AsyncStorage),
     partialize: (state) => ({
-      tasks: state.tasks
-    })
-  })
+      tasks: state.tasks,
+    }),
+  }),
 )
 
 export default useTaskStore

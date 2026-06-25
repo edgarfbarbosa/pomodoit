@@ -15,6 +15,7 @@ export function TaskList() {
           current={task.current}
           estimatedPomodoros={task.estimatedPomodoros}
           completedPomodoros={task.completedPomodoros}
+          isCompleted={task.isCompleted ?? false}
         />
       ))}
     </View>

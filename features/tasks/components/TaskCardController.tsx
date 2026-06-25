@@ -10,6 +10,7 @@ export function TaskCardController({
   current,
   estimatedPomodoros,
   completedPomodoros,
+  isCompleted = false,
 }: Task) {
   const [isEditing, setIsEditing] = useState(false)
   const [newTaskName, setNewTaskName] = useState(name)
@@ -19,6 +20,8 @@ export function TaskCardController({
   const deleteTask = useTaskStore((state) => state.deleteTask)
   const updateTask = useTaskStore((state) => state.updateTask)
   const setCurrentTask = useTaskStore((state) => state.setCurrentTask)
+  const setCompletedTask = useTaskStore((state) => state.setCompletedTask)
+  const setPendingTask = useTaskStore((state) => state.setPendingTask)
 
   function handleCardPress() {
     setCurrentTask(id)
@@ -30,6 +33,15 @@ export function TaskCardController({
 
   function handleDeleteButtonPress() {
     deleteTask(id)
+  }
+
+  function handleCompleteButtonPress() {
+    if (isCompleted) {
+      setPendingTask(id)
+      return
+    }
+
+    setCompletedTask(id)
   }
 
   function handleSaveButtonPress() {
@@ -63,12 +75,14 @@ export function TaskCardController({
         newTaskName={newTaskName}
         newEstimatedPomodoros={newEstimatedPomodoros}
         completedPomodoros={completedPomodoros}
+        isCompleted={isCompleted}
         onNewTaskNameChange={setNewTaskName}
         onIncreaseNewEstimatedPomodoros={handleIncreaseNewEstimatedPomodoros}
         onDecreaseNewEstimatedPomodoros={handleDecreaseNewEstimatedPomodoros}
         onSavePress={handleSaveButtonPress}
         onCancelPress={handleCancelButtonPress}
         onDeletePress={handleDeleteButtonPress}
+        onCompletePress={handleCompleteButtonPress}
       />
     )
   }
@@ -79,6 +93,7 @@ export function TaskCardController({
       current={current}
       estimatedPomodoros={estimatedPomodoros}
       completedPomodoros={completedPomodoros}
+      isCompleted={isCompleted}
       onCardPress={handleCardPress}
       onEditPress={handleEditingButtonPress}
     />

@@ -1,4 +1,4 @@
-import { EllipsisVertical } from 'lucide-react-native'
+import { Check, EllipsisVertical } from 'lucide-react-native'
 import { Pressable, Text, View } from 'react-native'
 import type { TaskCardProps } from '../types/task-card-props'
 
@@ -14,6 +14,7 @@ export function TaskCard({
   current,
   estimatedPomodoros,
   completedPomodoros,
+  isCompleted,
   onCardPress,
   onEditPress,
 }: TaskCardProps) {
@@ -23,8 +24,12 @@ export function TaskCard({
       className="my-2 min-h-20 w-full flex-col rounded-xl border border-outline bg-surface-1 p-4"
     >
       <View className="flex-row items-center justify-between gap-2">
-        {/* Current task */}
-        {current ? (
+        {/* Indicador de tarefa concluída ou tarefa atual */}
+        {isCompleted ? (
+          <View className="h-6 w-6 items-center justify-center rounded-full bg-primary">
+            <Check size={14} color="#FFFFFF" strokeWidth={3} />
+          </View>
+        ) : current ? (
           <View
             className="h-6 w-6 items-center justify-center rounded-full border-2 border-primary"
             style={{
@@ -44,7 +49,11 @@ export function TaskCard({
         <View className="flex-1 pr-8">
           {/* Task name */}
           <Text
-            className="font-inter-semi-bold text-base text-secondary -tracking-wide"
+            className={
+              isCompleted
+                ? 'font-inter-semi-bold text-base text-secondary -tracking-wide line-through'
+                : 'font-inter-semi-bold text-base text-secondary -tracking-wide'
+            }
             numberOfLines={1}
             ellipsizeMode="tail"
           >

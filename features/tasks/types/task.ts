@@ -4,4 +4,5 @@ export type Task = {
   estimatedPomodoros: number
   completedPomodoros: number
   current: boolean
+  isCompleted: boolean
 }

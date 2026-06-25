@@ -1,4 +1,4 @@
-import { Minus, Plus, Trash } from 'lucide-react-native'
+import { Check, Minus, Plus, RotateCcw, Trash } from 'lucide-react-native'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import type { TaskCardExpandedProps } from '../types/task-card-props'
 
@@ -12,12 +12,14 @@ import type { TaskCardExpandedProps } from '../types/task-card-props'
 export function TaskCardExpanded({
   newTaskName,
   newEstimatedPomodoros,
+  isCompleted,
   onNewTaskNameChange,
   onIncreaseNewEstimatedPomodoros,
   onDecreaseNewEstimatedPomodoros,
   onSavePress,
   onCancelPress,
   onDeletePress,
+  onCompletePress,
 }: TaskCardExpandedProps) {
   return (
     <View className="my-2 min-h-20 w-full flex-col rounded-xl border border-outline bg-surface-1 p-4">
@@ -56,6 +58,30 @@ export function TaskCardExpanded({
               <Plus width={20} color="#FFFFFF" />
             </Pressable>
           </View>
+          {/* Botão de conclusão da tarefa */}
+          <Pressable
+            onPress={onCompletePress}
+            className={
+              isCompleted
+                ? 'h-11 w-full flex-row items-center justify-center gap-1 rounded-lg border border-outline bg-surface-2'
+                : 'h-11 w-full flex-row items-center justify-center gap-1 rounded-lg bg-primary'
+            }
+          >
+            {isCompleted ? (
+              <RotateCcw size={18} color="#94A3B8" />
+            ) : (
+              <Check size={18} color="#FFFFFF" />
+            )}
+            <Text
+              className={
+                isCompleted
+                  ? 'font-inter-medium text-sm text-tertiary'
+                  : 'font-inter-medium text-secondary text-sm'
+              }
+            >
+              {isCompleted ? 'Reabrir tarefa' : 'Concluir tarefa'}
+            </Text>
+          </Pressable>
         </View>
 
         <View className="flex-row items-center justify-between border-outline border-t py-3">
