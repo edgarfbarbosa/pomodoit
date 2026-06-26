@@ -1,10 +1,10 @@
 import { Clock5, Pause, Play, SkipForward } from 'lucide-react-native'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Modal } from '../../../components/Modal'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
-import usePomodoroTimerSettings from '../stores/usePomodoroTimerSettings'
+import usePomodoroStore from '../stores/usePomodoroStore'
 
 /**
  * Exibe a tarefa atual, o tempo restante, o estágio do ciclo e as ações
@@ -21,28 +21,22 @@ export function PomodoroDisplay() {
     (state) => state.setCompletedPomodoros,
   )
 
-  const pomodoroMinutes = usePomodoroTimerSettings(
-    (state) => state.pomodoroMinutes,
-  )
+  const pomodoroMinutes = usePomodoroStore((state) => state.pomodoroMinutes)
 
-  const shortBreakMinutes = usePomodoroTimerSettings(
-    (state) => state.shortBreakMinutes,
-  )
+  const shortBreakMinutes = usePomodoroStore((state) => state.shortBreakMinutes)
 
-  const longBreakMinutes = usePomodoroTimerSettings(
-    (state) => state.longBreakMinutes,
-  )
+  const longBreakMinutes = usePomodoroStore((state) => state.longBreakMinutes)
 
-  const roundsBeforeLongBreak = usePomodoroTimerSettings(
+  const roundsBeforeLongBreak = usePomodoroStore(
     (state) => state.roundsBeforeLongBreak,
   )
 
-  const autoStartBreaks = usePomodoroTimerSettings(
-    (state) => state.autoStartBreaks,
-  )
+  const autoStartBreaks = usePomodoroStore((state) => state.autoStartBreaks)
 
-  const autoStartFocus = usePomodoroTimerSettings(
-    (state) => state.autoStartFocus,
+  const autoStartFocus = usePomodoroStore((state) => state.autoStartFocus)
+
+  const setHasTimerRunning = usePomodoroStore(
+    (state) => state.setHasTimerRunning,
   )
 
   /**
@@ -78,8 +72,19 @@ export function PomodoroDisplay() {
   )
 
   function handleStartOrPauseButtonPress() {
-    isRunning ? pauseTimer() : startTimer()
+    if (isRunning) {
+      pauseTimer()
+      setHasTimerRunning(false)
+      return
+    }
+
+    startTimer()
+    setHasTimerRunning(true)
   }
+
+  useEffect(() => {
+    setHasTimerRunning(isRunning)
+  }, [isRunning, setHasTimerRunning])
 
   /**
    * Controla o avanço manual do ciclo. Durante um pomodoro em andamento, exige

@@ -27,7 +27,7 @@ type PomodoroTimerSettings = {
   autoStartFocus: boolean
 }
 
-interface PomodoroTimerSettingsStore extends PomodoroTimerSettings {
+interface PomodoroStore extends PomodoroTimerSettings {
   setPomodoroMinutes: (pomodoroMinutes: number) => void
   setShortBreakMinutes: (shortBreakMinutes: number) => void
   setLongBreakMinutes: (longBreakMinutes: number) => void
@@ -36,6 +36,8 @@ interface PomodoroTimerSettingsStore extends PomodoroTimerSettings {
   setAutoStartFocus: (autoStartFocus: boolean) => void
   setPomodoroTimerSettings: (settings: PomodoroTimerSettings) => void
   resetPomodoroTimerSettings: () => void
+  hasTimerRunning: boolean
+  setHasTimerRunning: (hasTimerRunning: boolean) => void
 }
 
 function isValidInteger(
@@ -103,15 +105,14 @@ function getValidPomodoroTimerSettings(
   }
 }
 
-const pomodoroTimerSettingsStore: StateCreator<PomodoroTimerSettingsStore> = (
-  set,
-) => ({
+const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
   pomodoroMinutes: DEFAULT_POMODORO_MINUTES,
   shortBreakMinutes: DEFAULT_SHORT_BREAK_MINUTES,
   longBreakMinutes: DEFAULT_LONG_BREAK_MINUTES,
   roundsBeforeLongBreak: DEFAULT_ROUNDS_BEFORE_LONG_BREAK,
   autoStartBreaks: DEFAULT_AUTO_START_BREAKS,
   autoStartFocus: DEFAULT_AUTO_START_FOCUS,
+  hasTimerRunning: false,
 
   setPomodoroMinutes: (pomodoroMinutes) =>
     set((state) => ({
@@ -175,10 +176,13 @@ const pomodoroTimerSettingsStore: StateCreator<PomodoroTimerSettingsStore> = (
       autoStartBreaks: DEFAULT_AUTO_START_BREAKS,
       autoStartFocus: DEFAULT_AUTO_START_FOCUS,
     })),
+
+  setHasTimerRunning: (hasTimerRunning: boolean) =>
+    set(() => ({ hasTimerRunning })),
 })
 
-const usePomodoroTimerSettings = create<PomodoroTimerSettingsStore>()(
-  persist(pomodoroTimerSettingsStore, {
+const usePomodoroStore = create<PomodoroStore>()(
+  persist(pomodoroStore, {
     name: 'pomodoit-pomodoro-timer-settings-store',
     storage: createJSONStorage(() => AsyncStorage),
     partialize: (state) => ({
@@ -203,4 +207,4 @@ const usePomodoroTimerSettings = create<PomodoroTimerSettingsStore>()(
   }),
 )
 
-export default usePomodoroTimerSettings
+export default usePomodoroStore

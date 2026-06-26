@@ -3,38 +3,28 @@ import { Pressable, ScrollView, Text, View } from 'react-native'
 import { PomodoroCyclesSettingsCard } from '../components/PomodoroCyclesSettingsCard'
 import { PomodoroTimerPreferencesCard } from '../components/PomodoroTimerPreferencesCard'
 import { PomodoroTimerSettingsCard } from '../components/PomodoroTimerSettingsCard'
-import usePomodoroTimerSettings from '../stores/usePomodoroTimerSettings'
+import usePomodoroStore from '../stores/usePomodoroStore'
 
 export function PomodoroTimerSettingsScreen() {
-  const pomodoroMinutes = usePomodoroTimerSettings(
-    (state) => state.pomodoroMinutes,
-  )
+  const pomodoroMinutes = usePomodoroStore((state) => state.pomodoroMinutes)
 
-  const shortBreakMinutes = usePomodoroTimerSettings(
-    (state) => state.shortBreakMinutes,
-  )
+  const shortBreakMinutes = usePomodoroStore((state) => state.shortBreakMinutes)
 
-  const longBreakMinutes = usePomodoroTimerSettings(
-    (state) => state.longBreakMinutes,
-  )
+  const longBreakMinutes = usePomodoroStore((state) => state.longBreakMinutes)
 
-  const roundsBeforeLongBreak = usePomodoroTimerSettings(
+  const roundsBeforeLongBreak = usePomodoroStore(
     (state) => state.roundsBeforeLongBreak,
   )
 
-  const autoStartBreaks = usePomodoroTimerSettings(
-    (state) => state.autoStartBreaks,
-  )
+  const autoStartBreaks = usePomodoroStore((state) => state.autoStartBreaks)
 
-  const autoStartFocus = usePomodoroTimerSettings(
-    (state) => state.autoStartFocus,
-  )
+  const autoStartFocus = usePomodoroStore((state) => state.autoStartFocus)
 
-  const setPomodoroTimerSettings = usePomodoroTimerSettings(
+  const setPomodoroTimerSettings = usePomodoroStore(
     (state) => state.setPomodoroTimerSettings,
   )
 
-  const resetPomodoroTimerSettings = usePomodoroTimerSettings(
+  const resetPomodoroTimerSettings = usePomodoroStore(
     (state) => state.resetPomodoroTimerSettings,
   )
 
