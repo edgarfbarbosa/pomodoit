@@ -19,7 +19,8 @@ export function TaskCardExpanded({
   onSavePress,
   onCancelPress,
   onDeletePress,
-  onCompletePress,
+  onSetPendingPress,
+  onSetCompletedPress,
 }: TaskCardExpandedProps) {
   return (
     <View className="my-2 min-h-20 w-full flex-col rounded-xl border border-outline bg-surface-1 p-4">
@@ -58,36 +59,70 @@ export function TaskCardExpanded({
               <Plus width={20} color="#FFFFFF" />
             </Pressable>
           </View>
-          {/* Botão de conclusão da tarefa */}
-          <Pressable
-            onPress={onCompletePress}
-            className={
-              isCompleted
-                ? 'h-11 w-full flex-row items-center justify-center gap-1 rounded-lg border border-outline bg-surface-2'
-                : 'h-11 w-full flex-row items-center justify-center gap-1 rounded-lg bg-primary'
-            }
-          >
-            {isCompleted ? (
-              <RotateCcw size={18} color="#94A3B8" />
-            ) : (
-              <Check size={18} color="#FFFFFF" />
-            )}
-            <Text
+        </View>
+
+        <View className="mb-6 flex-col gap-3">
+          <Text className="font-inter-bold text-tertiary text-xs uppercase tracking-wider">
+            Status da tarefa
+          </Text>
+
+          {/* Toggle de status da tarefa */}
+          <View className="h-11 w-64 flex-row overflow-hidden rounded-lg border border-outline bg-surface-1">
+            <Pressable
+              onPress={onSetPendingPress}
+              accessibilityRole="button"
+              accessibilityLabel="Marcar tarefa como pendente"
               className={
                 isCompleted
-                  ? 'font-inter-medium text-sm text-tertiary'
-                  : 'font-inter-medium text-secondary text-sm'
+                  ? 'h-full flex-1 flex-row items-center justify-center gap-1 bg-surface-1 px-1.5'
+                  : 'h-full flex-1 flex-row items-center justify-center gap-1 bg-primary px-1.5'
               }
             >
-              {isCompleted ? 'Reabrir tarefa' : 'Concluir tarefa'}
-            </Text>
-          </Pressable>
+              <RotateCcw
+                size={16}
+                color={isCompleted ? '#94A3B8' : '#FFFFFF'}
+              />
+              <Text
+                className={
+                  isCompleted
+                    ? 'font-inter-semi-bold text-sm text-tertiary'
+                    : 'font-inter-semi-bold text-secondary text-sm'
+                }
+                numberOfLines={1}
+              >
+                Pendente
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={onSetCompletedPress}
+              accessibilityRole="button"
+              accessibilityLabel="Marcar tarefa como concluída"
+              className={
+                isCompleted
+                  ? 'h-full flex-1 flex-row items-center justify-center gap-1 bg-primary px-1.5'
+                  : 'h-full flex-1 flex-row items-center justify-center gap-1 bg-surface-1 px-1.5'
+              }
+            >
+              <Check size={16} color={isCompleted ? '#FFFFFF' : '#94A3B8'} />
+              <Text
+                className={
+                  isCompleted
+                    ? 'font-inter-semi-bold text-secondary text-sm'
+                    : 'font-inter-semi-bold text-sm text-tertiary'
+                }
+                numberOfLines={1}
+              >
+                Concluída
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
         <View className="flex-row items-center justify-between border-outline border-t py-3">
           <Pressable
             onPress={onDeletePress}
-            className="h-10 w-28 flex-row items-center justify-center gap-1 rounded-lg"
+            className="h-10 w-24 flex-row items-center justify-center gap-1 rounded-lg"
           >
             <Trash size={18} color="#FF4444" />
             <Text className="font-inter-medium text-[#FF4444] text-sm">
@@ -98,7 +133,7 @@ export function TaskCardExpanded({
           <View className="flex-row gap-2">
             <Pressable
               onPress={onCancelPress}
-              className="h-10 w-28 flex-row items-center justify-center gap-1 rounded-lg"
+              className="h-10 w-24 flex-row items-center justify-center gap-1 rounded-lg"
             >
               <Text className="font-inter-medium text-sm text-tertiary">
                 Cancelar
@@ -107,7 +142,7 @@ export function TaskCardExpanded({
 
             <Pressable
               onPress={onSavePress}
-              className="h-10 w-28 flex-row items-center justify-center gap-1 rounded-lg bg-primary"
+              className="h-10 w-24 flex-row items-center justify-center gap-1 rounded-lg bg-primary"
             >
               <Text className="font-inter-medium text-secondary text-sm">
                 Salvar

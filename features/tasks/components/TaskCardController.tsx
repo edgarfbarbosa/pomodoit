@@ -16,18 +16,20 @@ export function TaskCardController({
   const [newTaskName, setNewTaskName] = useState(name)
   const [newEstimatedPomodoros, setNewEstimatedPomodoros] =
     useState(estimatedPomodoros)
+  const [newIsCompleted, setNewIsCompleted] = useState(isCompleted)
 
   const deleteTask = useTaskStore((state) => state.deleteTask)
   const updateTask = useTaskStore((state) => state.updateTask)
   const setCurrentTask = useTaskStore((state) => state.setCurrentTask)
-  const setCompletedTask = useTaskStore((state) => state.setCompletedTask)
-  const setPendingTask = useTaskStore((state) => state.setPendingTask)
 
   function handleCardPress() {
     setCurrentTask(id)
   }
 
   function handleEditingButtonPress() {
+    setNewTaskName(name)
+    setNewEstimatedPomodoros(estimatedPomodoros)
+    setNewIsCompleted(isCompleted)
     setIsEditing(true)
   }
 
@@ -35,13 +37,12 @@ export function TaskCardController({
     deleteTask(id)
   }
 
-  function handleCompleteButtonPress() {
-    if (isCompleted) {
-      setPendingTask(id)
-      return
-    }
+  function handleSetPendingButtonPress() {
+    setNewIsCompleted(false)
+  }
 
-    setCompletedTask(id)
+  function handleSetCompletedButtonPress() {
+    setNewIsCompleted(true)
   }
 
   function handleSaveButtonPress() {
@@ -50,6 +51,7 @@ export function TaskCardController({
     updateTask(id, {
       name: newTaskName,
       estimatedPomodoros: newEstimatedPomodoros,
+      isCompleted: newIsCompleted,
     })
 
     setIsEditing(false)
@@ -58,6 +60,7 @@ export function TaskCardController({
   function handleCancelButtonPress() {
     setNewTaskName(name)
     setNewEstimatedPomodoros(estimatedPomodoros)
+    setNewIsCompleted(isCompleted)
     setIsEditing(false)
   }
 
@@ -75,14 +78,15 @@ export function TaskCardController({
         newTaskName={newTaskName}
         newEstimatedPomodoros={newEstimatedPomodoros}
         completedPomodoros={completedPomodoros}
-        isCompleted={isCompleted}
+        isCompleted={newIsCompleted}
         onNewTaskNameChange={setNewTaskName}
         onIncreaseNewEstimatedPomodoros={handleIncreaseNewEstimatedPomodoros}
         onDecreaseNewEstimatedPomodoros={handleDecreaseNewEstimatedPomodoros}
         onSavePress={handleSaveButtonPress}
         onCancelPress={handleCancelButtonPress}
         onDeletePress={handleDeleteButtonPress}
-        onCompletePress={handleCompleteButtonPress}
+        onSetPendingPress={handleSetPendingButtonPress}
+        onSetCompletedPress={handleSetCompletedButtonPress}
       />
     )
   }

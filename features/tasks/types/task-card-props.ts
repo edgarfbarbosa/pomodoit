@@ -23,5 +23,6 @@ export type TaskCardExpandedProps = {
   onSavePress: () => void
   onCancelPress: () => void
   onDeletePress: () => void
-  onCompletePress: () => void
+  onSetPendingPress: () => void
+  onSetCompletedPress: () => void
 }
