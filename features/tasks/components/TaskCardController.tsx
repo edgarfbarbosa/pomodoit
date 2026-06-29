@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { ConfirmCancelModal } from '../../../components/ConfirmCancelModal'
+import usePomodoroStore from '../../pomodoro/stores/usePomodoroStore'
 import useTaskStore from '../stores/useTaskStore'
 import type { Task } from '../types/task'
 import { TaskCard } from './TaskCard'
@@ -17,12 +19,24 @@ export function TaskCardController({
   const [newEstimatedPomodoros, setNewEstimatedPomodoros] =
     useState(estimatedPomodoros)
   const [newIsCompleted, setNewIsCompleted] = useState(isCompleted)
+  const [isChangeTaskModalOpen, setIsChangeTaskModalOpen] = useState(false)
 
   const deleteTask = useTaskStore((state) => state.deleteTask)
   const updateTask = useTaskStore((state) => state.updateTask)
   const setCurrentTask = useTaskStore((state) => state.setCurrentTask)
 
+  const hasCurrentTask = useTaskStore((state) =>
+    state.tasks.some((task) => task.current === true),
+  )
+
+  const hasTimerRunning = usePomodoroStore((state) => state.hasTimerRunning)
+
   function handleCardPress() {
+    if (hasCurrentTask && hasTimerRunning && !current) {
+      setIsChangeTaskModalOpen(true)
+      return
+    }
+
     setCurrentTask(id)
   }
 
@@ -72,6 +86,15 @@ export function TaskCardController({
     setNewEstimatedPomodoros((prev) => Math.max(1, prev - 1))
   }
 
+  function handleConfirmChangeTask() {
+    setCurrentTask(id)
+    setIsChangeTaskModalOpen(false)
+  }
+
+  function handleCancelChangeTask() {
+    setIsChangeTaskModalOpen(false)
+  }
+
   if (isEditing) {
     return (
       <TaskCardExpanded
@@ -92,14 +115,26 @@ export function TaskCardController({
   }
 
   return (
-    <TaskCard
-      name={name}
-      current={current}
-      estimatedPomodoros={estimatedPomodoros}
-      completedPomodoros={completedPomodoros}
-      isCompleted={isCompleted}
-      onCardPress={handleCardPress}
-      onEditPress={handleEditingButtonPress}
-    />
+    <>
+      <ConfirmCancelModal
+        isVisible={isChangeTaskModalOpen}
+        title="Alterar tarefa?"
+        description="O foco atual já começou com outra tarefa. Se você alterar agora, o foco será associado à nova tarefa selecionada."
+        confirmActionLabel="Alterar tarefa"
+        cancelActionLabel="Manter tarefa"
+        onConfirmAction={handleConfirmChangeTask}
+        onCancelAction={handleCancelChangeTask}
+      />
+
+      <TaskCard
+        name={name}
+        current={current}
+        estimatedPomodoros={estimatedPomodoros}
+        completedPomodoros={completedPomodoros}
+        isCompleted={isCompleted}
+        onCardPress={handleCardPress}
+        onEditPress={handleEditingButtonPress}
+      />
+    </>
   )
 }

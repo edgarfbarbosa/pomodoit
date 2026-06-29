@@ -1,7 +1,7 @@
 import { Clock5, Pause, Play, SkipForward } from 'lucide-react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
-import { Modal } from '../../../components/Modal'
+import { ConfirmCancelModal } from '../../../components/ConfirmCancelModal'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
 import usePomodoroStore from '../stores/usePomodoroStore'
@@ -11,7 +11,8 @@ import usePomodoroStore from '../stores/usePomodoroStore'
  * rápidas para iniciar, pausar ou avançar a sessão.
  */
 export function PomodoroDisplay() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isDiscardFocusModalOpen, setIsDiscardFocusModalOpen] = useState(false)
+  const [isCompleteTaskModalOpen, setIsCompleteTaskModalOpen] = useState(false)
 
   const currentTask = useTaskStore((state) =>
     state.tasks.find((task) => task.current),
@@ -20,6 +21,8 @@ export function PomodoroDisplay() {
   const setCompletedPomodoros = useTaskStore(
     (state) => state.setCompletedPomodoros,
   )
+
+  const setCompletedTask = useTaskStore((state) => state.setCompletedTask)
 
   const pomodoroMinutes = usePomodoroStore((state) => state.pomodoroMinutes)
 
@@ -50,7 +53,18 @@ export function PomodoroDisplay() {
   const handlePomodoroComplete = useCallback(() => {
     if (!currentTask) return
 
-    setCompletedPomodoros(currentTask.id, currentTask.completedPomodoros + 1)
+    const updatedCompletedPomodoros = currentTask.completedPomodoros + 1
+
+    setCompletedPomodoros(currentTask.id, updatedCompletedPomodoros)
+
+    const hasCompletedEstimatedPomodoros =
+      currentTask.completedPomodoros < currentTask.estimatedPomodoros &&
+      updatedCompletedPomodoros >= currentTask.estimatedPomodoros &&
+      !currentTask.isCompleted
+
+    if (hasCompletedEstimatedPomodoros) {
+      setIsCompleteTaskModalOpen(true)
+    }
   }, [currentTask, setCompletedPomodoros])
 
   const {
@@ -93,20 +107,32 @@ export function PomodoroDisplay() {
    */
   function handleSkipButtonPress() {
     if (pomodoroState === 'pomodoro' && isRunning && !isPomodoroCompleted) {
-      setIsOpen(true)
+      setIsDiscardFocusModalOpen(true)
       return
     }
 
     switchPomodoroState()
   }
 
-  function handleCancelSkipModalButtonPress() {
-    setIsOpen(false)
+  function handleCancelDiscardFocus() {
+    setIsDiscardFocusModalOpen(false)
   }
 
-  function handleConfirmSkipModalButtonPress() {
-    setIsOpen(false)
+  function handleConfirmDiscardFocus() {
+    setIsDiscardFocusModalOpen(false)
     switchPomodoroState()
+  }
+
+  function handleConfirmTaskCompletion() {
+    if (currentTask) {
+      setCompletedTask(currentTask.id)
+    }
+
+    setIsCompleteTaskModalOpen(false)
+  }
+
+  function handleCancelTaskCompletion() {
+    setIsCompleteTaskModalOpen(false)
   }
 
   const taskNameOrDefaultMessage =
@@ -125,14 +151,24 @@ export function PomodoroDisplay() {
 
   return (
     <View className="flex flex-col rounded-2xl border-primary border-l-4 bg-surface-1 p-6">
-      <Modal
-        visible={isOpen}
+      <ConfirmCancelModal
+        isVisible={isDiscardFocusModalOpen}
         title="Descartar foco atual?"
         description="Todo o progresso desta sessão de foco será perdido e não será contabilizado."
-        confirmLabel="Descartar foco"
-        cancelLabel="Continuar foco"
-        onConfirm={handleConfirmSkipModalButtonPress}
-        onCancel={handleCancelSkipModalButtonPress}
+        confirmActionLabel="Descartar foco"
+        cancelActionLabel="Continuar foco"
+        onConfirmAction={handleConfirmDiscardFocus}
+        onCancelAction={handleCancelDiscardFocus}
+      />
+
+      <ConfirmCancelModal
+        isVisible={isCompleteTaskModalOpen}
+        title="Concluir tarefa?"
+        description="Esta tarefa atingiu a estimativa de pomodoros. Deseja marcá-la como concluída?"
+        confirmActionLabel="Concluir tarefa"
+        cancelActionLabel="Continuar aberta"
+        onConfirmAction={handleConfirmTaskCompletion}
+        onCancelAction={handleCancelTaskCompletion}
       />
 
       <View className="mb-3 flex-row justify-between">
