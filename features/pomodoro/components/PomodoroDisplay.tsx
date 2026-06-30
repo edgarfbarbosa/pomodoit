@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native'
 import { ConfirmCancelModal } from '../../../components/ConfirmCancelModal'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
+import { usePomodoroSounds } from '../hooks/usePomodoroSounds'
 import usePomodoroStore from '../stores/usePomodoroStore'
 
 /**
@@ -42,6 +43,12 @@ export function PomodoroDisplay() {
     (state) => state.setHasTimerRunning,
   )
 
+  const {
+    playTimerControlSound,
+    playFocusCompleteSound,
+    playBreakCompleteSound,
+  } = usePomodoroSounds()
+
   /**
    * Função entregue ao hook `usePomodoro` como callback.
    * A função inform ao hook: "quando um pomodoro terminar, execute isto".
@@ -51,6 +58,8 @@ export function PomodoroDisplay() {
    * concluídos dessa tarefa recebe um incremento.
    */
   const handlePomodoroComplete = useCallback(() => {
+    playFocusCompleteSound()
+
     if (!currentTask) return
 
     const updatedCompletedPomodoros = currentTask.completedPomodoros + 1
@@ -65,7 +74,11 @@ export function PomodoroDisplay() {
     if (hasCompletedEstimatedPomodoros) {
       setIsCompleteTaskModalOpen(true)
     }
-  }, [currentTask, setCompletedPomodoros])
+  }, [currentTask, playFocusCompleteSound, setCompletedPomodoros])
+
+  const handleBreakComplete = useCallback(() => {
+    playBreakCompleteSound()
+  }, [playBreakCompleteSound])
 
   const {
     formattedTime,
@@ -80,12 +93,15 @@ export function PomodoroDisplay() {
     shortBreakMinutes,
     longBreakMinutes,
     handlePomodoroComplete,
+    handleBreakComplete,
     roundsBeforeLongBreak,
     autoStartBreaks,
     autoStartFocus,
   )
 
   function handleStartOrPauseButtonPress() {
+    playTimerControlSound()
+
     if (isRunning) {
       pauseTimer()
       setHasTimerRunning(false)

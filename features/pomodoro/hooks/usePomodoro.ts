@@ -12,6 +12,7 @@ export function usePomodoro(
   shortBreak: number = DEFAULT_SHORT_BREAK_MINUTES,
   longBreak: number = DEFAULT_LONG_BREAK_MINUTES,
   onPomodoroComplete?: () => void,
+  onBreakComplete?: () => void,
   roundsBeforeLongBreak: number = DEFAULT_ROUNDS_BEFORE_LONG_BREAK,
   autoStartBreaks: boolean = DEFAULT_AUTO_START_BREAKS,
   autoStartFocus: boolean = DEFAULT_AUTO_START_FOCUS,
@@ -139,6 +140,10 @@ export function usePomodoro(
             onPomodoroComplete?.()
           }
 
+          if (pomodoroState === 'shortBreak' || pomodoroState === 'longBreak') {
+            onBreakComplete?.()
+          }
+
           return 0
         }
 
@@ -147,7 +152,7 @@ export function usePomodoro(
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [isRunning, onPomodoroComplete, pomodoroState])
+  }, [isRunning, onBreakComplete, onPomodoroComplete, pomodoroState])
 
   useEffect(() => {
     if (
