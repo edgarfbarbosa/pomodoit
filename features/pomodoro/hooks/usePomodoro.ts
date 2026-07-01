@@ -7,6 +7,14 @@ const DEFAULT_ROUNDS_BEFORE_LONG_BREAK = 4
 const DEFAULT_AUTO_START_BREAKS = true
 const DEFAULT_AUTO_START_FOCUS = false
 
+const getTimestampInSeconds = () => Date.now() / 1000
+
+function getRemainingSeconds(sessionEndAt: number) {
+  const timestamp = getTimestampInSeconds()
+
+  return Math.max(0, Math.ceil(sessionEndAt - timestamp))
+}
+
 export function usePomodoro(
   pomodoro: number = DEFAULT_POMODORO_MINUTES,
   shortBreak: number = DEFAULT_SHORT_BREAK_MINUTES,
@@ -22,6 +30,7 @@ export function usePomodoro(
   const longBreakInSeconds = longBreak * 60
 
   const [countdown, setCountdown] = useState(pomodoroInSeconds)
+  const [sessionEndAt, setSessionEndAt] = useState<number | null>(null)
   const [isRunning, setIsRunning] = useState(false)
   const [isPomodoroCompleted, setIsPomodoroCompleted] = useState(false)
   const [completedFocusSessions, setCompletedFocusSessions] = useState(0)
@@ -64,11 +73,21 @@ export function usePomodoro(
   function startTimer() {
     if (countdown === 0) return
 
+    const currentTimestamp = getTimestampInSeconds()
+
     setHasStartedCurrentSession(true)
+    setSessionEndAt(currentTimestamp + countdown)
     setIsRunning(true)
   }
 
   function pauseTimer() {
+    if (sessionEndAt) {
+      const remainingSeconds = getRemainingSeconds(sessionEndAt)
+
+      setCountdown(remainingSeconds)
+    }
+
+    setSessionEndAt(null)
     setIsRunning(false)
   }
 
@@ -77,6 +96,20 @@ export function usePomodoro(
       setCompletedFocusSessions(0)
     }
   }, [roundsBeforeLongBreak])
+
+  const setNextSessionEndAt = useCallback(
+    (durationInSeconds: number, shouldAutoStart: boolean) => {
+      if (!shouldAutoStart) {
+        setSessionEndAt(null)
+        return
+      }
+
+      const currentTimestamp = getTimestampInSeconds()
+
+      setSessionEndAt(currentTimestamp + durationInSeconds)
+    },
+    [],
+  )
 
   const switchPomodoroState = useCallback(
     (shouldAutoStart = false) => {
@@ -96,6 +129,7 @@ export function usePomodoro(
             setCompletedFocusSessions(0)
             setPomodoroState('longBreak')
             setCountdown(longBreakInSeconds)
+            setNextSessionEndAt(longBreakInSeconds, shouldAutoStartNextSession)
             return
           }
 
@@ -104,12 +138,14 @@ export function usePomodoro(
 
         setPomodoroState('shortBreak')
         setCountdown(shortBreakInSeconds)
+        setNextSessionEndAt(shortBreakInSeconds, shouldAutoStartNextSession)
         return
       }
 
       if (pomodoroState === 'shortBreak' || pomodoroState === 'longBreak') {
         setPomodoroState('pomodoro')
         setCountdown(pomodoroInSeconds)
+        setNextSessionEndAt(pomodoroInSeconds, shouldAutoStartNextSession)
         return
       }
     },
@@ -123,36 +159,42 @@ export function usePomodoro(
       longBreakInSeconds,
       shortBreakInSeconds,
       pomodoroInSeconds,
+      setNextSessionEndAt,
     ],
   )
 
   useEffect(() => {
-    if (!isRunning) return
+    if (!isRunning || !sessionEndAt) return
 
     const intervalId = setInterval(() => {
-      setCountdown((currentCountdown) => {
-        if (currentCountdown <= 1) {
-          clearInterval(intervalId)
-          setIsRunning(false)
+      const remainingSeconds = getRemainingSeconds(sessionEndAt)
 
-          if (pomodoroState === 'pomodoro') {
-            setIsPomodoroCompleted(true)
-            onPomodoroComplete?.()
-          }
+      setCountdown(remainingSeconds)
 
-          if (pomodoroState === 'shortBreak' || pomodoroState === 'longBreak') {
-            onBreakComplete?.()
-          }
+      if (remainingSeconds <= 0) {
+        clearInterval(intervalId)
+        setIsRunning(false)
+        setSessionEndAt(null)
 
-          return 0
+        if (pomodoroState === 'pomodoro') {
+          setIsPomodoroCompleted(true)
+          onPomodoroComplete?.()
         }
 
-        return currentCountdown - 1
-      })
+        if (pomodoroState === 'shortBreak' || pomodoroState === 'longBreak') {
+          onBreakComplete?.()
+        }
+      }
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [isRunning, onBreakComplete, onPomodoroComplete, pomodoroState])
+  }, [
+    isRunning,
+    sessionEndAt,
+    onBreakComplete,
+    onPomodoroComplete,
+    pomodoroState,
+  ])
 
   useEffect(() => {
     if (
