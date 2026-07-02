@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { AppState } from 'react-native'
 
 const DEFAULT_POMODORO_MINUTES = 25
 const DEFAULT_SHORT_BREAK_MINUTES = 5
@@ -163,38 +164,57 @@ export function usePomodoro(
     ],
   )
 
+  const completeCurrentSession = useCallback(() => {
+    setIsRunning(false)
+    setSessionEndAt(null)
+
+    if (pomodoroState === 'pomodoro') {
+      setIsPomodoroCompleted(true)
+      onPomodoroComplete?.()
+    }
+
+    if (pomodoroState === 'shortBreak' || pomodoroState === 'longBreak') {
+      onBreakComplete?.()
+    }
+  }, [onBreakComplete, onPomodoroComplete, pomodoroState])
+
+  const syncCountdownWithSessionEnd = useCallback(() => {
+    if (!sessionEndAt) return
+
+    const remainingSeconds = getRemainingSeconds(sessionEndAt)
+
+    setCountdown(remainingSeconds)
+
+    if (remainingSeconds <= 0) {
+      completeCurrentSession()
+    }
+  }, [completeCurrentSession, sessionEndAt])
+
   useEffect(() => {
     if (!isRunning || !sessionEndAt) return
 
     const intervalId = setInterval(() => {
-      const remainingSeconds = getRemainingSeconds(sessionEndAt)
-
-      setCountdown(remainingSeconds)
-
-      if (remainingSeconds <= 0) {
+      if (getRemainingSeconds(sessionEndAt) <= 0) {
         clearInterval(intervalId)
-        setIsRunning(false)
-        setSessionEndAt(null)
-
-        if (pomodoroState === 'pomodoro') {
-          setIsPomodoroCompleted(true)
-          onPomodoroComplete?.()
-        }
-
-        if (pomodoroState === 'shortBreak' || pomodoroState === 'longBreak') {
-          onBreakComplete?.()
-        }
+        syncCountdownWithSessionEnd()
+        return
       }
+
+      syncCountdownWithSessionEnd()
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [
-    isRunning,
-    sessionEndAt,
-    onBreakComplete,
-    onPomodoroComplete,
-    pomodoroState,
-  ])
+  }, [isRunning, sessionEndAt, syncCountdownWithSessionEnd])
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        syncCountdownWithSessionEnd()
+      }
+    })
+
+    return () => subscription.remove()
+  }, [syncCountdownWithSessionEnd])
 
   useEffect(() => {
     if (
@@ -221,6 +241,7 @@ export function usePomodoro(
     countdown,
     minutes,
     seconds,
+    sessionEndAt,
     formattedTime,
     isRunning,
     pomodoroState,
