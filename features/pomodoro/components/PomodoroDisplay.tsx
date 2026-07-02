@@ -4,8 +4,37 @@ import { Pressable, Text, View } from 'react-native'
 import { ConfirmCancelModal } from '../../../components/ConfirmCancelModal'
 import useTaskStore from '../../tasks/stores/useTaskStore'
 import { usePomodoro } from '../hooks/usePomodoro'
+import { usePomodoroNotifications } from '../hooks/usePomodoroNotifications'
 import { usePomodoroSounds } from '../hooks/usePomodoroSounds'
 import usePomodoroStore from '../stores/usePomodoroStore'
+
+function getSecondsUntilSessionEnd(sessionEndAt: number) {
+  const timestamp = Date.now() / 1000
+
+  return Math.max(1, Math.ceil(sessionEndAt - timestamp))
+}
+
+function getPomodoroNotificationContent(
+  pomodoroState: 'pomodoro' | 'shortBreak' | 'longBreak',
+) {
+  switch (pomodoroState) {
+    case 'pomodoro':
+      return {
+        title: 'Foco concluído',
+        body: 'Sua sessão de foco terminou. Hora de fazer uma pausa.',
+      }
+    case 'shortBreak':
+      return {
+        title: 'Pausa curta concluída',
+        body: 'Sua pausa curta terminou. Hora de voltar ao foco.',
+      }
+    case 'longBreak':
+      return {
+        title: 'Pausa longa concluída',
+        body: 'Sua pausa longa terminou. Hora de voltar ao foco.',
+      }
+  }
+}
 
 /**
  * Exibe a tarefa atual, o tempo restante, o estágio do ciclo e as ações
@@ -49,6 +78,9 @@ export function PomodoroDisplay() {
     playBreakCompleteSound,
   } = usePomodoroSounds()
 
+  const { schedulePomodoroNotification, cancelPomodoroNotification } =
+    usePomodoroNotifications()
+
   /**
    * Função entregue ao hook `usePomodoro` como callback.
    * A função inform ao hook: "quando um pomodoro terminar, execute isto".
@@ -81,6 +113,7 @@ export function PomodoroDisplay() {
   }, [playBreakCompleteSound])
 
   const {
+    sessionEndAt,
     formattedTime,
     isRunning,
     startTimer,
@@ -115,6 +148,31 @@ export function PomodoroDisplay() {
   useEffect(() => {
     setHasTimerRunning(isRunning)
   }, [isRunning, setHasTimerRunning])
+
+  useEffect(() => {
+    if (!isRunning || !sessionEndAt) {
+      cancelPomodoroNotification()
+      return
+    }
+
+    const notificationContent = getPomodoroNotificationContent(pomodoroState)
+
+    schedulePomodoroNotification({
+      seconds: getSecondsUntilSessionEnd(sessionEndAt),
+      title: notificationContent.title,
+      body: notificationContent.body,
+    })
+
+    return () => {
+      cancelPomodoroNotification()
+    }
+  }, [
+    isRunning,
+    sessionEndAt,
+    pomodoroState,
+    schedulePomodoroNotification,
+    cancelPomodoroNotification,
+  ])
 
   /**
    * Controla o avanço manual do ciclo. Durante um pomodoro em andamento, exige
