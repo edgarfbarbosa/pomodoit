@@ -112,6 +112,27 @@ export function usePomodoro(
     [],
   )
 
+  const getCurrentSessionDurationInSeconds = useCallback(() => {
+    if (pomodoroState === 'pomodoro') return pomodoroInSeconds
+
+    if (pomodoroState === 'shortBreak') return shortBreakInSeconds
+
+    return longBreakInSeconds
+  }, [
+    longBreakInSeconds,
+    pomodoroInSeconds,
+    pomodoroState,
+    shortBreakInSeconds,
+  ])
+
+  function resetCurrentSession() {
+    setCountdown(getCurrentSessionDurationInSeconds())
+    setSessionEndAt(null)
+    setIsRunning(false)
+    setIsPomodoroCompleted(false)
+    setHasStartedCurrentSession(false)
+  }
+
   const switchPomodoroState = useCallback(
     (shouldAutoStart = false) => {
       const shouldAutoStartNextSession =
@@ -247,6 +268,7 @@ export function usePomodoro(
     pomodoroState,
     startTimer,
     pauseTimer,
+    resetCurrentSession,
     switchPomodoroState,
     isPomodoroCompleted,
   }
