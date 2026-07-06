@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router'
-import { List, Settings } from 'lucide-react-native'
+import { List, Settings, Timer } from 'lucide-react-native'
 import type { ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -45,7 +45,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="tasks"
         options={{
-          title: 'Lista',
+          title: 'Tarefas',
           tabBarAccessibilityLabel: 'Lista de tarefas',
           tabBarIcon: ({ focused, color }) => (
             <TabBarIcon>
@@ -54,11 +54,29 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="focus"
+        options={{
+          title: 'Foco',
+          tabBarAccessibilityLabel: 'Tela de foco',
+          tabBarIcon: ({ focused, color }) => (
+            <TabBarIcon>
+              <Timer
+                size={24}
+                color={color}
+                strokeWidth={focused ? 2.8 : 2.4}
+              />
+            </TabBarIcon>
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Configurações',
-          tabBarAccessibilityLabel: 'Configurações do temporizador',
+          title: 'Ajustes',
+          tabBarAccessibilityLabel: 'Ajustes do temporizador',
           tabBarIcon: ({ focused, color }) => (
             <TabBarIcon>
               <Settings
