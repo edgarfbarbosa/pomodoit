@@ -1,14 +1,7 @@
 import { Check, EllipsisVertical } from 'lucide-react-native'
-import { Pressable, Text, View } from 'react-native'
+import { type GestureResponderEvent, Pressable, Text, View } from 'react-native'
 import type { TaskCardProps } from '../types/task-card-props'
 
-/**
- * Exibe um cartão compacto de tarefa com nome, progresso em pomodoros, indicador
- * visual de tarefa atual e botão para abrir as ações de edição.
- *
- * Quando `current` é verdadeiro, o indicador lateral recebe destaque visual
- * para mostrar ao usuário qual tarefa está em andamento no momento.
- */
 export function TaskCard({
   name,
   current,
@@ -18,64 +11,66 @@ export function TaskCard({
   onCardPress,
   onEditPress,
 }: TaskCardProps) {
+  function handleEditPress(event: GestureResponderEvent) {
+    event.stopPropagation()
+    onEditPress()
+  }
+
   return (
     <Pressable
       onPress={onCardPress}
-      className="my-2 min-h-20 w-full flex-col rounded-xl border border-outline bg-surface-1 p-4"
+      className={
+        isCompleted
+          ? 'min-h-16 w-full flex-row items-center rounded-xl border border-outline bg-surface-0 px-4 py-3 opacity-80'
+          : 'min-h-16 w-full flex-row items-center rounded-xl border border-outline bg-surface-1 px-4 py-3'
+      }
     >
-      <View className="flex-row items-center justify-between gap-2">
-        {/* Indicador de tarefa concluída ou tarefa atual */}
-        {isCompleted ? (
-          <View className="h-6 w-6 items-center justify-center rounded-full bg-primary">
-            <Check size={14} color="#FFFFFF" strokeWidth={3} />
-          </View>
-        ) : current ? (
-          <View
-            className="h-6 w-6 items-center justify-center rounded-full border-2 border-primary"
-            style={{
-              shadowColor: '#2F80FF',
-              shadowOpacity: 0.8,
-              shadowRadius: 8,
-              shadowOffset: { width: 0, height: 0 },
-              elevation: 6,
-            }}
-          >
-            <View className="h-1 w-1 rounded-full bg-primary" />
-          </View>
-        ) : (
-          <View className="h-6 w-6 rounded-full border-2 border-outline" />
-        )}
-
-        <View className="flex-1 pr-8">
-          {/* Task name */}
-          <Text
-            className={
-              isCompleted
-                ? 'font-inter-semi-bold text-base text-secondary -tracking-wide line-through'
-                : 'font-inter-semi-bold text-base text-secondary -tracking-wide'
-            }
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {name}
-          </Text>
+      {isCompleted ? (
+        <View className="h-6 w-6 items-center justify-center rounded-md border border-primary bg-surface-1">
+          <Check size={14} color="#0066FF" strokeWidth={2.6} />
         </View>
-
-        <View className="flex-row items-center gap-3">
-          {/* Pomodoro progress */}
-          <Text className="font-inter text-tertiary text-xs uppercase -tracking-wide">
-            <Text className="text-sm">{completedPomodoros}</Text> /{' '}
-            {estimatedPomodoros}
-          </Text>
-
-          {/* Vert icon */}
-          <Pressable
-            onPress={onEditPress}
-            className="h-10 w-10 items-center justify-center rounded-lg bg-surface-1"
-          >
-            <EllipsisVertical size={20} color="#A9B5C6" />
-          </Pressable>
+      ) : current ? (
+        <View className="h-6 w-6 items-center justify-center">
+          <View className="h-2.5 w-2.5 rounded-full bg-primary" />
         </View>
+      ) : (
+        <View className="h-6 w-6 items-center justify-center">
+          <View className="h-2.5 w-2.5 rounded-full border border-tertiary" />
+        </View>
+      )}
+
+      <View className="ml-4 min-w-0 flex-1 pr-4">
+        <Text
+          className={
+            isCompleted
+              ? 'font-inter-semi-bold text-base text-tertiary line-through'
+              : 'font-inter-semi-bold text-base text-secondary'
+          }
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {name}
+        </Text>
+      </View>
+
+      <View className="flex-row items-center gap-3">
+        <Text className="font-inter text-tertiary text-xs uppercase -tracking-wide">
+          <Text className="text-sm">{completedPomodoros}</Text> /{' '}
+          {estimatedPomodoros}
+        </Text>
+
+        <Pressable
+          onPress={handleEditPress}
+          className="h-10 w-8 items-center justify-center rounded-lg"
+          accessibilityRole="button"
+          accessibilityLabel="Editar tarefa"
+        >
+          <EllipsisVertical
+            size={20}
+            color={isCompleted ? '#38393D' : '#94A3B8'}
+            strokeWidth={2.4}
+          />
+        </Pressable>
       </View>
     </Pressable>
   )

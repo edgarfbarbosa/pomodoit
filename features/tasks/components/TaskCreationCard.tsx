@@ -6,7 +6,7 @@ export function TaskCreationCard({ onOpenFormPress }: TaskCreationCardProps) {
   return (
     <Pressable
       onPress={onOpenFormPress}
-      className="h-20 w-full flex-row items-center justify-start gap-3 rounded-xl border border-outline bg-surface-1 px-4"
+      className="h-16 w-full flex-row items-center justify-start gap-4 rounded-xl border border-outline border-dashed bg-surface-1 px-5"
     >
       <Plus size={22} color="#0066FF" />
 

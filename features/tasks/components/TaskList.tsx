@@ -6,7 +6,7 @@ export function TaskList() {
   const tasks = useTaskStore((state) => state.tasks)
 
   return (
-    <View>
+    <View className="gap-2">
       {tasks.map((task) => (
         <TaskCardController
           key={task.id}
