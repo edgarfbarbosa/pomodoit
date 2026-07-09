@@ -27,6 +27,11 @@ type PomodoroTimerSettings = {
   autoStartFocus: boolean
 }
 
+type PomodoroSessionPreview = {
+  timeLabel: string
+  progressPercentage: number
+}
+
 interface PomodoroStore extends PomodoroTimerSettings {
   setPomodoroMinutes: (pomodoroMinutes: number) => void
   setShortBreakMinutes: (shortBreakMinutes: number) => void
@@ -38,6 +43,9 @@ interface PomodoroStore extends PomodoroTimerSettings {
   resetPomodoroTimerSettings: () => void
   hasTimerRunning: boolean
   setHasTimerRunning: (hasTimerRunning: boolean) => void
+  focusSessionTimeLabel: string
+  focusSessionProgressPercentage: number
+  setFocusSessionPreview: (preview: PomodoroSessionPreview) => void
 }
 
 function isValidInteger(
@@ -64,6 +72,12 @@ function getValidValue(
 
 function getValidBoolean(value: unknown, defaultValue: boolean) {
   return typeof value === 'boolean' ? value : defaultValue
+}
+
+function getValidProgressPercentage(value: number) {
+  if (!Number.isFinite(value)) return 0
+
+  return Math.min(100, Math.max(0, value))
 }
 
 function getValidPomodoroTimerSettings(
@@ -113,6 +127,8 @@ const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
   autoStartBreaks: DEFAULT_AUTO_START_BREAKS,
   autoStartFocus: DEFAULT_AUTO_START_FOCUS,
   hasTimerRunning: false,
+  focusSessionTimeLabel: '25:00',
+  focusSessionProgressPercentage: 0,
 
   setPomodoroMinutes: (pomodoroMinutes) =>
     set((state) => ({
@@ -179,6 +195,13 @@ const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
 
   setHasTimerRunning: (hasTimerRunning: boolean) =>
     set(() => ({ hasTimerRunning })),
+
+  setFocusSessionPreview: ({ timeLabel, progressPercentage }) =>
+    set(() => ({
+      focusSessionTimeLabel: timeLabel,
+      focusSessionProgressPercentage:
+        getValidProgressPercentage(progressPercentage),
+    })),
 })
 
 const usePomodoroStore = create<PomodoroStore>()(

@@ -1,4 +1,4 @@
-import { Check, Circle, Play } from 'lucide-react-native'
+import { Clock5, Play } from 'lucide-react-native'
 import { Pressable, Text, View } from 'react-native'
 import usePomodoroStore from '../../pomodoro/stores/usePomodoroStore'
 import useTaskStore from '../stores/useTaskStore'
@@ -7,16 +7,8 @@ type FocusedTaskCardProps = {
   onStartFocusPress: () => void
 }
 
-function getTaskProgressPercentage(
-  completedPomodoros: number,
-  estimatedPomodoros: number,
-) {
-  if (estimatedPomodoros <= 0) return 0
-
-  return Math.min(
-    100,
-    Math.round((completedPomodoros / estimatedPomodoros) * 100),
-  )
+function formatPomodoroMinutes(minutes: number) {
+  return `${String(minutes).padStart(2, '0')}:00`
 }
 
 export function FocusedTaskCard({ onStartFocusPress }: FocusedTaskCardProps) {
@@ -25,87 +17,88 @@ export function FocusedTaskCard({ onStartFocusPress }: FocusedTaskCardProps) {
   )
 
   const hasTimerRunning = usePomodoroStore((state) => state.hasTimerRunning)
-
-  const taskProgressPercentage = currentTask
-    ? getTaskProgressPercentage(
-        currentTask.completedPomodoros,
-        currentTask.estimatedPomodoros,
-      )
-    : 0
+  const pomodoroMinutes = usePomodoroStore((state) => state.pomodoroMinutes)
+  const focusSessionTimeLabel = usePomodoroStore(
+    (state) => state.focusSessionTimeLabel,
+  )
+  const focusSessionProgressPercentage = usePomodoroStore(
+    (state) => state.focusSessionProgressPercentage,
+  )
 
   const hasCurrentTask = Boolean(currentTask)
-  const isCompleted = currentTask?.isCompleted ?? false
-  const statusLabel = hasCurrentTask
-    ? isCompleted
-      ? 'CONCLUÍDA'
-      : 'PENDENTE'
-    : 'SEM TAREFA'
-  const actionLabel = hasTimerRunning ? 'Continuar Foco' : 'Iniciar Foco'
+  const isFocusSessionActive = hasCurrentTask && hasTimerRunning
+  const progressLabel = currentTask
+    ? `${currentTask.completedPomodoros}/${currentTask.estimatedPomodoros}`
+    : '0/0'
+  const focusActionLabel = hasTimerRunning ? 'Continuar foco' : 'Iniciar foco'
 
-  return (
-    <View className="relative w-full overflow-hidden rounded-xl border border-outline bg-surface-1 py-5 pr-5 pl-6">
-      <View className="absolute top-0 bottom-0 left-0 w-1 bg-primary" />
+  if (isFocusSessionActive) {
+    return (
+      <View className="relative min-h-[112px] w-full overflow-hidden rounded-xl border border-outline bg-surface-1 px-6 py-5">
+        <View className="flex-1 flex-row items-center justify-between gap-5">
+          <Text
+            className="min-w-0 flex-1 font-inter-semi-bold text-2xl text-secondary"
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {currentTask?.name}
+          </Text>
 
-      <View className="mb-3 flex-row items-center justify-between gap-3">
-        <Text className="font-inter-bold text-tertiary text-xs uppercase tracking-wider">
-          Tarefa em foco
-        </Text>
-
-        <View className="flex-row items-center gap-1.5">
-          {isCompleted ? (
-            <View className="h-4 w-4 items-center justify-center rounded-full bg-primary">
-              <Check size={11} color="#FFFFFF" strokeWidth={3} />
-            </View>
-          ) : (
-            <Circle size={14} color="#94A3B8" strokeWidth={2.5} />
-          )}
-
-          <Text className="font-inter-bold text-tertiary text-xs uppercase tracking-wider">
-            {statusLabel}
+          <Text className="shrink-0 font-inter-bold text-5xl text-primary">
+            {focusSessionTimeLabel}
           </Text>
         </View>
+
+        <View className="absolute right-0 bottom-0 left-0 h-1 bg-surface-3">
+          <View
+            className="h-full bg-primary"
+            style={{ width: `${focusSessionProgressPercentage}%` }}
+          />
+        </View>
       </View>
+    )
+  }
 
-      <Text
-        className="font-inter-semi-bold text-secondary text-xl"
-        numberOfLines={2}
-        ellipsizeMode="tail"
-      >
-        {currentTask?.name ?? 'Nenhuma tarefa selecionada'}
-      </Text>
+  return (
+    <View className="relative w-full overflow-hidden rounded-xl border border-outline bg-surface-1 py-5 pr-4 pl-7">
+      <View className="absolute top-0 bottom-0 left-0 w-1 bg-primary" />
 
-      <View className="mt-3 h-1 w-full overflow-hidden rounded-full bg-surface-3">
-        <View
-          className="h-full rounded-full bg-primary"
-          style={{ width: `${taskProgressPercentage}%` }}
-        />
-      </View>
+      <View className="flex-row items-center justify-between gap-4">
+        <View className="min-w-0 flex-1">
+          <Text
+            className="font-inter-semi-bold text-2xl text-secondary"
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {currentTask?.name ?? 'Nenhuma tarefa selecionada'}
+          </Text>
 
-      <Pressable
-        onPress={onStartFocusPress}
-        disabled={!hasCurrentTask}
-        className={
-          hasCurrentTask
-            ? 'mt-5 h-12 flex-row items-center justify-center gap-2 rounded-lg bg-secondary'
-            : 'mt-5 h-12 flex-row items-center justify-center gap-2 rounded-lg bg-surface-2'
-        }
-      >
-        <Play
-          size={18}
-          color={hasCurrentTask ? '#0066FF' : '#94A3B8'}
-          strokeWidth={2.5}
-        />
+          <View className="mt-2 flex-row items-center gap-2">
+            <Clock5 size={15} color="#94A3B8" strokeWidth={2.3} />
+            <Text className="font-inter-medium text-sm text-tertiary">
+              {formatPomodoroMinutes(pomodoroMinutes)} • {progressLabel}
+            </Text>
+          </View>
+        </View>
 
-        <Text
+        <Pressable
+          onPress={onStartFocusPress}
+          disabled={!hasCurrentTask}
+          accessibilityRole="button"
+          accessibilityLabel={focusActionLabel}
           className={
             hasCurrentTask
-              ? 'font-inter-medium text-base text-primary'
-              : 'font-inter-medium text-base text-tertiary'
+              ? 'h-[72px] w-[72px] items-center justify-center rounded-xl border border-outline bg-surface-1'
+              : 'h-[72px] w-[72px] items-center justify-center rounded-xl border border-outline bg-surface-2'
           }
         >
-          {hasCurrentTask ? actionLabel : 'Selecione uma tarefa'}
-        </Text>
-      </Pressable>
+          <Play
+            size={26}
+            color={hasCurrentTask ? '#FFFFFF' : '#94A3B8'}
+            strokeWidth={2.4}
+          />
+        </Pressable>
+      </View>
     </View>
   )
 }

@@ -56,6 +56,35 @@ function formatFocusTime(totalMinutes: number) {
   return `${hours}h ${minutes}m`
 }
 
+function getSessionDurationInSeconds(
+  pomodoroState: 'pomodoro' | 'shortBreak' | 'longBreak',
+  pomodoroMinutes: number,
+  shortBreakMinutes: number,
+  longBreakMinutes: number,
+) {
+  if (pomodoroState === 'pomodoro') return pomodoroMinutes * 60
+
+  if (pomodoroState === 'shortBreak') return shortBreakMinutes * 60
+
+  return longBreakMinutes * 60
+}
+
+function getSessionProgressPercentage(
+  remainingSeconds: number,
+  sessionDurationInSeconds: number,
+) {
+  if (sessionDurationInSeconds <= 0) return 0
+
+  return Math.min(
+    100,
+    Math.round(
+      ((sessionDurationInSeconds - remainingSeconds) /
+        sessionDurationInSeconds) *
+        100,
+    ),
+  )
+}
+
 /**
  * Exibe a tela de Foco, com temporizador Pomodoro, controles da sessão e
  * resumo simples calculado a partir das tarefas locais.
@@ -95,6 +124,10 @@ export function PomodoroFocusScreen() {
     (state) => state.setHasTimerRunning,
   )
 
+  const setFocusSessionPreview = usePomodoroStore(
+    (state) => state.setFocusSessionPreview,
+  )
+
   const {
     playTimerControlSound,
     playFocusCompleteSound,
@@ -128,6 +161,7 @@ export function PomodoroFocusScreen() {
   }, [playBreakCompleteSound])
 
   const {
+    countdown,
     sessionEndAt,
     formattedTime,
     isRunning,
@@ -266,6 +300,23 @@ export function PomodoroFocusScreen() {
   const totalFocusMinutes = totalCompletedPomodoros * pomodoroMinutes
   const recentCompletedTasks = completedTasks.slice(0, 3)
   const isDiscardFocusModalOpen = Boolean(discardFocusAction)
+  const sessionDurationInSeconds = getSessionDurationInSeconds(
+    pomodoroState,
+    pomodoroMinutes,
+    shortBreakMinutes,
+    longBreakMinutes,
+  )
+  const sessionProgressPercentage = getSessionProgressPercentage(
+    countdown,
+    sessionDurationInSeconds,
+  )
+
+  useEffect(() => {
+    setFocusSessionPreview({
+      timeLabel: formattedTime,
+      progressPercentage: sessionProgressPercentage,
+    })
+  }, [formattedTime, sessionProgressPercentage, setFocusSessionPreview])
 
   return (
     <ScrollView
