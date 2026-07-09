@@ -31,9 +31,16 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
 
   updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) =>
     set((state) => ({
-      tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, ...data } : task,
-      ),
+      tasks: state.tasks.map((task) => {
+        if (task.id !== id) return task
+
+        const updatedTask = { ...task, ...data }
+
+        return {
+          ...updatedTask,
+          current: updatedTask.isCompleted ? false : updatedTask.current,
+        }
+      }),
     })),
 
   deleteTask: (id: string) =>
@@ -44,7 +51,7 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
   setCompletedTask: (id: string) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, isCompleted: true } : task,
+        task.id === id ? { ...task, current: false, isCompleted: true } : task,
       ),
     })),
 
@@ -56,12 +63,20 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
     })),
 
   setCurrentTask: (id: string) =>
-    set((state) => ({
-      tasks: state.tasks.map((task) => ({
-        ...task,
-        current: task.id === id,
-      })),
-    })),
+    set((state) => {
+      const nextCurrentTask = state.tasks.find((task) => task.id === id)
+
+      if (!nextCurrentTask || nextCurrentTask.isCompleted) {
+        return { tasks: state.tasks }
+      }
+
+      return {
+        tasks: state.tasks.map((task) => ({
+          ...task,
+          current: task.id === id,
+        })),
+      }
+    }),
 
   setCompletedPomodoros: (id: string, completedPomodoros: number) =>
     set((state) => ({

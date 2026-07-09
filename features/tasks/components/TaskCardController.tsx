@@ -32,6 +32,8 @@ export function TaskCardController({
   const hasTimerRunning = usePomodoroStore((state) => state.hasTimerRunning)
 
   function handleCardPress() {
+    if (isCompleted) return
+
     if (hasCurrentTask && hasTimerRunning && !current) {
       setIsChangeTaskModalOpen(true)
       return
