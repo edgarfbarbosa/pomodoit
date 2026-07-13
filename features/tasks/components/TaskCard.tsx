@@ -11,6 +11,12 @@ export function TaskCard({
   onCardPress,
   onEditPress,
 }: TaskCardProps) {
+  /**
+   * Trata o toque no botão de edição da tarefa.
+   *
+   * O `event.stopPropagation()` impede que o toque no botão de edição
+   * também acione o `onCardPress` do Pressable externo.
+   */
   function handleEditPress(event: GestureResponderEvent) {
     event.stopPropagation()
     onEditPress()

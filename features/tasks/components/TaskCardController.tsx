@@ -30,11 +30,12 @@ export function TaskCardController({
   )
 
   const hasTimerRunning = usePomodoroStore((state) => state.hasTimerRunning)
+  const shouldConfirmTaskChange = hasCurrentTask && hasTimerRunning && !current
 
   function handleCardPress() {
     if (isCompleted) return
 
-    if (hasCurrentTask && hasTimerRunning && !current) {
+    if (shouldConfirmTaskChange) {
       setIsChangeTaskModalOpen(true)
       return
     }
@@ -62,10 +63,12 @@ export function TaskCardController({
   }
 
   function handleSaveButtonPress() {
-    if (!newTaskName.trim()) return
+    const trimmedTaskName = newTaskName.trim()
+
+    if (!trimmedTaskName) return
 
     updateTask(id, {
-      name: newTaskName,
+      name: trimmedTaskName,
       estimatedPomodoros: newEstimatedPomodoros,
       isCompleted: newIsCompleted,
     })
@@ -102,7 +105,6 @@ export function TaskCardController({
       <TaskCardExpanded
         newTaskName={newTaskName}
         newEstimatedPomodoros={newEstimatedPomodoros}
-        completedPomodoros={completedPomodoros}
         isCompleted={newIsCompleted}
         onNewTaskNameChange={setNewTaskName}
         onIncreaseNewEstimatedPomodoros={handleIncreaseNewEstimatedPomodoros}

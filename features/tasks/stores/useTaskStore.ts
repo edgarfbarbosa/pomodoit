@@ -15,20 +15,24 @@ interface TaskStore {
 }
 
 const taskStore: StateCreator<TaskStore> = (set) => ({
-  tasks: [
-    {
-      id: '3',
-      name: 'Desenvolver meu projeto',
-      current: true,
-      estimatedPomodoros: 3,
-      completedPomodoros: 0,
-      isCompleted: false,
-    },
-  ],
+  tasks: [],
 
+  /**
+   * Cria uma nova tarefa no fim da lista.
+   *
+   * @param task Tarefa completa que será adicionada à store.
+   */
   createTask: (task: Task) =>
     set((state) => ({ tasks: [...state.tasks, task] })),
 
+  /**
+   * Atualiza os dados editáveis de uma tarefa.
+   *
+   * Se a tarefa for marcada como concluída, ela deixa de ser a tarefa atual.
+   *
+   * @param id Identificador da tarefa que será atualizada.
+   * @param data Dados parciais que serão aplicados à tarefa.
+   */
   updateTask: (id: string, data: Partial<Omit<Task, 'id'>>) =>
     set((state) => ({
       tasks: state.tasks.map((task) => {
@@ -43,11 +47,23 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
       }),
     })),
 
+  /**
+   * Remove uma tarefa pelo identificador.
+   *
+   * @param id Identificador da tarefa que será removida.
+   */
   deleteTask: (id: string) =>
     set((state) => ({
       tasks: state.tasks.filter((task) => task.id !== id),
     })),
 
+  /**
+   * Marca uma tarefa como concluída.
+   *
+   * Uma tarefa concluída não permanece como tarefa atual.
+   *
+   * @param id Identificador da tarefa que será concluída.
+   */
   setCompletedTask: (id: string) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
@@ -55,6 +71,11 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
       ),
     })),
 
+  /**
+   * Reabre uma tarefa concluída, mantendo-a como pendente.
+   *
+   * @param id Identificador da tarefa que será reaberta.
+   */
   setPendingTask: (id: string) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
@@ -62,6 +83,13 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
       ),
     })),
 
+  /**
+   * Define uma tarefa pendente como tarefa atual.
+   *
+   * Tarefas inexistentes ou concluídas são ignoradas.
+   *
+   * @param id Identificador da tarefa que será marcada como atual.
+   */
   setCurrentTask: (id: string) =>
     set((state) => {
       const nextCurrentTask = state.tasks.find((task) => task.id === id)
@@ -78,6 +106,14 @@ const taskStore: StateCreator<TaskStore> = (set) => ({
       }
     }),
 
+  /**
+   * Atualiza a quantidade de Pomodoros concluídos de uma tarefa.
+   *
+   * Usado pelo fluxo do timer ao finalizar uma sessão de foco.
+   *
+   * @param id Identificador da tarefa que receberá o novo progresso.
+   * @param completedPomodoros Quantidade atualizada de Pomodoros concluídos.
+   */
   setCompletedPomodoros: (id: string, completedPomodoros: number) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>

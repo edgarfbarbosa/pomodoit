@@ -18,7 +18,6 @@ export function TaskCreationCardExpanded({
           Nova tarefa
         </Text>
 
-        {/* Input new task */}
         <TextInput
           placeholder="Nome da tarefa..."
           className="h-14 rounded-xl border border-outline bg-surface-2 px-3 font-inter-medium text-base text-secondary -tracking-wide focus:outline-none"
@@ -33,7 +32,6 @@ export function TaskCreationCardExpanded({
             Pomodoros estimados
           </Text>
 
-          {/* Stepper (+/-) */}
           <View className="h-11 w-36 flex-row items-center justify-center gap-4 overflow-hidden rounded-lg border border-outline bg-surface-2">
             <Pressable
               onPress={onDecreasePomodoroPress}
@@ -55,7 +53,6 @@ export function TaskCreationCardExpanded({
           </View>
         </View>
 
-        {/* Buttons Add/Cancel */}
         <View className="flex-row-reverse">
           <Pressable
             onPress={onCreateTaskPress}

@@ -2,13 +2,6 @@ import { Check, Minus, Plus, RotateCcw, Trash } from 'lucide-react-native'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import type { TaskCardExpandedProps } from '../types/task-card-props'
 
-/**
- * Exibe o modo expandido do cartão de tarefa para edição.
- *
- * Permite alterar o nome da tarefa, ajustar a quantidade estimada de pomodoros
- * pelo controle de incremento e decremento, além de salvar, cancelar ou deletar
- * a tarefa atual.
- */
 export function TaskCardExpanded({
   newTaskName,
   newEstimatedPomodoros,
@@ -26,7 +19,6 @@ export function TaskCardExpanded({
     <View className="my-2 min-h-20 w-full flex-col rounded-xl border border-outline bg-surface-1 p-4">
       <View className="flex-col">
         <View className="mb-5">
-          {/* Input new task name */}
           <TextInput
             value={newTaskName}
             onChangeText={onNewTaskNameChange}
@@ -39,7 +31,6 @@ export function TaskCardExpanded({
             Pomodoros estimados
           </Text>
 
-          {/* Stepper (+/-) */}
           <View className="h-11 w-36 flex-row items-center justify-center gap-4 overflow-hidden rounded-lg border border-outline bg-surface-2">
             <Pressable
               onPress={onDecreaseNewEstimatedPomodoros}
@@ -66,7 +57,6 @@ export function TaskCardExpanded({
             Status da tarefa
           </Text>
 
-          {/* Toggle de status da tarefa */}
           <View className="h-11 w-64 flex-row overflow-hidden rounded-lg border border-outline bg-surface-1">
             <Pressable
               onPress={onSetPendingPress}

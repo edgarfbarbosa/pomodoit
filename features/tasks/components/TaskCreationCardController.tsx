@@ -23,11 +23,13 @@ export function TaskCreationCardController() {
   }
 
   function handleCreateTaskPress() {
-    if (!taskName.trim()) return
+    const trimmedTaskName = taskName.trim()
+
+    if (!trimmedTaskName) return
 
     createTask({
       id: String(Date.now()),
-      name: taskName,
+      name: trimmedTaskName,
       current: false,
       estimatedPomodoros: pomodoroAmount,
       completedPomodoros: 0,

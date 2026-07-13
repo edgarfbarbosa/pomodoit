@@ -15,7 +15,6 @@ export type TaskCardProps = Pick<
 export type TaskCardExpandedProps = {
   newTaskName: string
   newEstimatedPomodoros: number
-  completedPomodoros: number
   isCompleted: boolean
   onNewTaskNameChange: (name: string) => void
   onIncreaseNewEstimatedPomodoros: () => void
