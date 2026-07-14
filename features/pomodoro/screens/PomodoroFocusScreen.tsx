@@ -85,10 +85,6 @@ function getSessionProgressPercentage(
   )
 }
 
-/**
- * Exibe a tela de Foco, com temporizador Pomodoro, controles da sessão e
- * resumo simples calculado a partir das tarefas locais.
- */
 export function PomodoroFocusScreen() {
   const [discardFocusAction, setDiscardFocusAction] =
     useState<DiscardFocusAction | null>(null)
@@ -278,17 +274,6 @@ export function PomodoroFocusScreen() {
     setIsCompleteTaskModalOpen(false)
   }
 
-  function getPomodoroStateLabel() {
-    switch (pomodoroState) {
-      case 'pomodoro':
-        return isRunning ? 'Foco ativo' : 'Foco'
-      case 'shortBreak':
-        return 'Pausa curta'
-      case 'longBreak':
-        return 'Pausa longa'
-    }
-  }
-
   const taskNameOrDefaultMessage =
     currentTask?.name ?? 'Nenhuma tarefa selecionada'
 
@@ -348,9 +333,6 @@ export function PomodoroFocusScreen() {
         <View className="h-72 w-72 items-center justify-center rounded-full border-4 border-primary bg-surface-0">
           <Text className="font-inter-bold text-7xl text-secondary">
             {formattedTime}
-          </Text>
-          <Text className="mt-2 font-inter-extra-bold text-tertiary text-xs uppercase">
-            {getPomodoroStateLabel()}
           </Text>
         </View>
 
