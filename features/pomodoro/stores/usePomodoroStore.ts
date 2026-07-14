@@ -130,6 +130,13 @@ const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
   focusSessionTimeLabel: '25:00',
   focusSessionProgressPercentage: 0,
 
+  /**
+   * Atualiza a duração da sessão de foco.
+   *
+   * Valores fora do intervalo permitido mantêm o valor atual.
+   *
+   * @param pomodoroMinutes Nova duração do foco em minutos.
+   */
   setPomodoroMinutes: (pomodoroMinutes) =>
     set((state) => ({
       pomodoroMinutes: getValidValue(
@@ -140,6 +147,13 @@ const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
       ),
     })),
 
+  /**
+   * Atualiza a duração da pausa curta.
+   *
+   * Valores fora do intervalo permitido mantêm o valor atual.
+   *
+   * @param shortBreakMinutes Nova duração da pausa curta em minutos.
+   */
   setShortBreakMinutes: (shortBreakMinutes) =>
     set((state) => ({
       shortBreakMinutes: getValidValue(
@@ -150,6 +164,13 @@ const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
       ),
     })),
 
+  /**
+   * Atualiza a duração da pausa longa.
+   *
+   * Valores fora do intervalo permitido mantêm o valor atual.
+   *
+   * @param longBreakMinutes Nova duração da pausa longa em minutos.
+   */
   setLongBreakMinutes: (longBreakMinutes) =>
     set((state) => ({
       longBreakMinutes: getValidValue(
@@ -160,6 +181,14 @@ const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
       ),
     })),
 
+  /**
+   * Atualiza quantos focos concluídos são necessários antes da pausa longa.
+   *
+   * O valor 0 desativa a pausa longa. Valores fora do intervalo permitido
+   * mantêm o valor atual.
+   *
+   * @param roundsBeforeLongBreak Nova quantidade de focos antes da pausa longa.
+   */
   setRoundsBeforeLongBreak: (roundsBeforeLongBreak) =>
     set((state) => ({
       roundsBeforeLongBreak: getValidValue(
@@ -170,19 +199,44 @@ const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
       ),
     })),
 
+  /**
+   * Define se as pausas começam automaticamente após uma sessão de foco.
+   *
+   * Valores não booleanos mantêm a preferência atual.
+   *
+   * @param autoStartBreaks Nova preferência de início automático das pausas.
+   */
   setAutoStartBreaks: (autoStartBreaks) =>
     set((state) => ({
       autoStartBreaks: getValidBoolean(autoStartBreaks, state.autoStartBreaks),
     })),
 
+  /**
+   * Define se o foco começa automaticamente após uma pausa.
+   *
+   * Valores não booleanos mantêm a preferência atual.
+   *
+   * @param autoStartFocus Nova preferência de início automático do foco.
+   */
   setAutoStartFocus: (autoStartFocus) =>
     set((state) => ({
       autoStartFocus: getValidBoolean(autoStartFocus, state.autoStartFocus),
     })),
 
+  /**
+   * Atualiza todas as configurações persistidas do temporizador.
+   *
+   * Cada campo é validado antes de entrar na store para evitar configurações
+   * inválidas vindas da UI ou do armazenamento local.
+   *
+   * @param settings Configurações do temporizador que serão normalizadas.
+   */
   setPomodoroTimerSettings: (settings) =>
     set(() => getValidPomodoroTimerSettings(settings)),
 
+  /**
+   * Restaura as configurações padrão do temporizador.
+   */
   resetPomodoroTimerSettings: () =>
     set(() => ({
       pomodoroMinutes: DEFAULT_POMODORO_MINUTES,
@@ -193,9 +247,23 @@ const pomodoroStore: StateCreator<PomodoroStore> = (set) => ({
       autoStartFocus: DEFAULT_AUTO_START_FOCUS,
     })),
 
+  /**
+   * Informa se existe uma sessão de timer em execução.
+   *
+   * Esse estado é usado fora da tela Foco para refletir o andamento da sessão.
+   *
+   * @param hasTimerRunning Novo estado de execução do timer.
+   */
   setHasTimerRunning: (hasTimerRunning: boolean) =>
     set(() => ({ hasTimerRunning })),
 
+  /**
+   * Atualiza o resumo da sessão em foco exibido fora da tela Foco.
+   *
+   * A porcentagem é limitada entre 0 e 100 antes de entrar na store.
+   *
+   * @param preview Tempo formatado e progresso atual da sessão.
+   */
   setFocusSessionPreview: ({ timeLabel, progressPercentage }) =>
     set(() => ({
       focusSessionTimeLabel: timeLabel,
