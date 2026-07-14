@@ -6,7 +6,7 @@ type PomodoroCyclesSettingsCardProps = {
   onChange: (value: number) => void
 }
 
-function getDescription(value: number) {
+function getLongBreakCyclesDescription(value: number) {
   if (value === 0) return 'Pausa longa desativada.'
 
   if (value === 1) {
@@ -27,7 +27,7 @@ export function PomodoroCyclesSettingsCard({
   return (
     <View className="mb-3 flex-col rounded-xl border border-outline bg-surface-1 p-5">
       <View className="flex-row items-center justify-between">
-        <Text className="font-inter-semi-bold text-lg text-secondary tracking-[-0.18px]">
+        <Text className="font-inter-semi-bold text-lg text-secondary">
           Ciclos até a pausa longa
         </Text>
 
@@ -48,11 +48,16 @@ export function PomodoroCyclesSettingsCard({
           thumbTintColor="#FFFFFF"
           style={{ width: '100%', height: 24 }}
         />
-        <Text className="mt-2 font-inter-medium text-tertiary text-xs">
-          0 ciclos
-        </Text>
+        <View className="mt-2 flex-row justify-between">
+          <Text className="font-inter-medium text-tertiary text-xs">
+            0 ciclos
+          </Text>
+          <Text className="font-inter-medium text-tertiary text-xs">
+            4 ciclos
+          </Text>
+        </View>
         <Text className="mt-2 font-inter text-[13px] text-tertiary leading-[18px]">
-          {getDescription(value)}
+          {getLongBreakCyclesDescription(value)}
         </Text>
       </View>
     </View>

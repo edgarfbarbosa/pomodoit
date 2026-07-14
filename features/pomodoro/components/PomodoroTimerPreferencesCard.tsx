@@ -23,7 +23,7 @@ function PreferenceItem({
   return (
     <View className="flex-row items-center justify-between">
       <View className="flex-1 pr-4">
-        <Text className="font-inter-semi-bold text-lg text-secondary tracking-[-0.18px]">
+        <Text className="font-inter-semi-bold text-lg text-secondary">
           {label}
         </Text>
         <Text className="mt-1 font-inter text-[13px] text-tertiary leading-[18px]">
