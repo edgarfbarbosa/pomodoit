@@ -8,8 +8,17 @@ const DEFAULT_ROUNDS_BEFORE_LONG_BREAK = 4
 const DEFAULT_AUTO_START_BREAKS = true
 const DEFAULT_AUTO_START_FOCUS = false
 
+/**
+ * Retorna o horário atual em segundos para comparar com o fim real da sessão.
+ */
 const getTimestampInSeconds = () => Date.now() / 1000
 
+/**
+ * Calcula quantos segundos ainda faltam até `sessionEndAt`.
+ *
+ * O timestamp atual é comparado com o fim da sessão, `Math.ceil` evita perder
+ * visualmente o último segundo e `Math.max` impede valores negativos.
+ */
 function getRemainingSeconds(sessionEndAt: number) {
   const timestamp = getTimestampInSeconds()
 
@@ -45,10 +54,22 @@ export function usePomodoro(
   const minutes = Math.floor(countdown / 60)
   const seconds = countdown % 60
 
+  /**
+   * Memoriza o texto exibido no timer.
+   *
+   * O `useMemo` evita recriar a string formatada enquanto `minutes` e `seconds`
+   * continuam iguais.
+   */
   const formattedTime = useMemo(() => {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
   }, [minutes, seconds])
 
+  /**
+   * Define o `countdown` inicial da etapa atual enquanto ela ainda não começou.
+   *
+   * Se a sessão já começou, o efeito não sobrescreve o tempo restante. Caso
+   * contrário, escolhe a duração correta de foco, pausa curta ou pausa longa.
+   */
   useEffect(() => {
     if (hasStartedCurrentSession) return
 
@@ -71,6 +92,15 @@ export function usePomodoro(
     shortBreakInSeconds,
   ])
 
+  /**
+   * Inicia a etapa atual usando o tempo restante do `countdown`.
+   *
+   * Se o contador está zerado, não há sessão para iniciar.
+   * O timestamp atual serve de base para calcular o horário real de término.
+   * `setHasStartedCurrentSession(true)` protege o countdown contra mudanças de configuração.
+   * `setSessionEndAt(...)` registra quando a sessão deve terminar no relógio real.
+   * `setIsRunning(true)` ativa os efeitos responsáveis por sincronizar o timer.
+   */
   function startTimer() {
     if (countdown === 0) return
 
@@ -81,6 +111,14 @@ export function usePomodoro(
     setIsRunning(true)
   }
 
+  /**
+   * Pausa a etapa atual preservando o tempo restante.
+   *
+   * Quando existe `sessionEndAt`, o tempo restante é recalculado pelo relógio real.
+   * `setCountdown(...)` grava esse tempo para permitir retomar a sessão depois.
+   * `setSessionEndAt(null)` remove o horário de término enquanto o timer está pausado.
+   * `setIsRunning(false)` interrompe a sincronização ativa do contador.
+   */
   function pauseTimer() {
     if (sessionEndAt) {
       const remainingSeconds = getRemainingSeconds(sessionEndAt)
@@ -98,6 +136,13 @@ export function usePomodoro(
     }
   }, [roundsBeforeLongBreak])
 
+  /**
+   * Prepara o horário de término da próxima etapa.
+   *
+   * Se a próxima etapa não deve iniciar automaticamente, `sessionEndAt` é
+   * limpo para manter o timer parado. Se deve iniciar, a duração recebida é
+   * somada ao timestamp atual para registrar o novo fim real da sessão.
+   */
   const setNextSessionEndAt = useCallback(
     (durationInSeconds: number, shouldAutoStart: boolean) => {
       if (!shouldAutoStart) {
@@ -133,6 +178,26 @@ export function usePomodoro(
     setHasStartedCurrentSession(false)
   }
 
+  /**
+   * Alterna para a próxima etapa do ciclo Pomodoro.
+   *
+   * Primeiro decide se a próxima etapa pode iniciar automaticamente. Essa
+   * decisão depende da ação que chamou a troca e das preferências do usuário:
+   * ao sair de foco, usa `autoStartBreaks`; ao sair de pausa, usa
+   * `autoStartFocus`.
+   *
+   * Em seguida, sincroniza os estados compartilhados da nova etapa:
+   * `setIsRunning(...)` liga ou mantém parado o timer da próxima sessão;
+   * `setIsPomodoroCompleted(false)` limpa a marca da sessão de foco anterior;
+   * `setHasStartedCurrentSession(...)` indica se a próxima sessão já começou.
+   *
+   * Quando a etapa atual é foco, a função registra mais uma sessão concluída
+   * e decide entre pausa curta e pausa longa. Quando a etapa atual é pausa
+   * curta ou longa, a função volta para foco.
+   *
+   * Cada troca também atualiza `pomodoroState`, define o novo `countdown` e
+   * delega para `setNextSessionEndAt` o agendamento real do fim da sessão.
+   */
   const switchPomodoroState = useCallback(
     (shouldAutoStart = false) => {
       const shouldAutoStartNextSession =
@@ -144,6 +209,7 @@ export function usePomodoro(
       setHasStartedCurrentSession(shouldAutoStartNextSession)
 
       if (pomodoroState === 'pomodoro') {
+        // Conta apenas focos realmente concluídos para decidir a pausa longa.
         if (isPomodoroCompleted && roundsBeforeLongBreak > 0) {
           const nextCompletedFocusSessions = completedFocusSessions + 1
 
@@ -185,6 +251,14 @@ export function usePomodoro(
     ],
   )
 
+  /**
+   * Finaliza a etapa atual antes de trocar para a próxima.
+   *
+   * `setIsRunning(false)` para a sincronização do timer.
+   * `setSessionEndAt(null)` remove o fim real da sessão finalizada.
+   * Em foco, marca o Pomodoro como concluído e dispara `onPomodoroComplete`.
+   * Em pausa curta ou longa, dispara `onBreakComplete`.
+   */
   const completeCurrentSession = useCallback(() => {
     setIsRunning(false)
     setSessionEndAt(null)
@@ -199,6 +273,15 @@ export function usePomodoro(
     }
   }, [onBreakComplete, onPomodoroComplete, pomodoroState])
 
+  /**
+   * Sincroniza o contador visual com o horário real de término da sessão.
+   *
+   * Sem `sessionEndAt`, não há sessão ativa para sincronizar.
+   * O tempo restante é recalculado pelo relógio real para cobrir intervalos,
+   * app em segundo plano e retorno ao app.
+   * `setCountdown(...)` atualiza o valor exibido na tela.
+   * Quando o tempo chega a zero, `completeCurrentSession()` encerra a etapa.
+   */
   const syncCountdownWithSessionEnd = useCallback(() => {
     if (!sessionEndAt) return
 
